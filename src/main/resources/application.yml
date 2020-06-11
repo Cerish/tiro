@@ -1,0 +1,22 @@
+# 配置 服务器信息
+server:
+  port: 8090
+
+
+spring:
+  # 数据库信息配置
+  datasource:
+    username: root
+    password: 123
+    url: jdbc:mysql://localhost:3306/tiro?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+  # 配置 redis 相关信息
+  redis:
+    host: localhost
+    port: 6379
+
+jwt:
+  # 秘钥
+  secret: "secret"
+  # 单位 ： ms
+  expiration: 7200
+
