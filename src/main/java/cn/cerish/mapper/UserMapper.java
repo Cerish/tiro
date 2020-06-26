@@ -9,4 +9,6 @@ public interface UserMapper {
     public List<User> findAll();
 
     public User findUserById(int id);
+
+    public User loadUserByUsername(String username);
 }

@@ -6,6 +6,8 @@
     </select>
     <select id="findUserById" resultType="cn.cerish.entity.User">
         select * from tiro.user where id = #{id}
+    </select><select id="loadUserByUsername" resultType="cn.cerish.entity.User">
+        select * from tiro.user where username = #{username}
     </select>
 
 </mapper>

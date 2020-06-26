@@ -43,7 +43,20 @@ public class SwaggerConfig {
                 .groupName("collection")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("cn.cerish.controller.collection"))
-                .build();
+                .build()
+                .globalOperationParameters(globalOperation());
+    }
+    private List<Parameter> globalOperation(){
+        //添加head参数配置start
+        ParameterBuilder tokenPar = new ParameterBuilder();
+        List<Parameter> pars = new ArrayList<>();
+        //第一个token为传参的key，第二个token为swagger页面显示的值
+        tokenPar.name("Authorzation").description("token")
+                .modelRef(new ModelRef("string"))
+                .parameterType("header").required(false).build();
+        pars.add(tokenPar.build());
+
+        return pars;
     }
 
     // api 信息

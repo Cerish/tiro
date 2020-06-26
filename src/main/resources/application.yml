@@ -17,6 +17,6 @@ spring:
 jwt:
   # 秘钥
   secret: "secret"
-  # 单位 ： ms
-  expiration: 7200
+  # 单位 ： 秒
+  expiration: 60
 
