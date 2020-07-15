@@ -1,14 +1,17 @@
 package cn.cerish.service;
 
+import cn.cerish.entity.Response;
 import cn.cerish.entity.User;
-import cn.cerish.filter.CusAuthenticationManager;
+import cn.cerish.filter.loginHandler.CusAuthenticationManager;
 import cn.cerish.mapper.UserMapper;
 import cn.cerish.util.JwtUtil;
 import cn.cerish.util.RedisUtil;
+import cn.cerish.util.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,6 +45,12 @@ public class AuthServiceImpl {
         User userDetails = userMapper.loadUserByUsername( username );
         String token = jwtUtil.generateToken(userDetails);
         return token;
+    }
 
+    public Response signup(User user) {
+        // 对密码进行加密后再存储
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        userMapper.signup(user);
+        return ResponseUtils.success();
     }
 }

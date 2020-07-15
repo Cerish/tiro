@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import javax.security.auth.Subject;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,8 @@ import java.util.UUID;
 public class JwtUtil {
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private HttpServletResponse response;
 
     private static final String CLAIM_KEY_USER_ID = "user_id";
     private static final String CLAIM_KEY_USER_NAME = "user_name";
@@ -26,6 +30,8 @@ public class JwtUtil {
 
     // 有效期 单位：s
     private long expiration;
+    // 存储在redis 的有效期 单位：s
+    private long redis_expiration;
 
     public String getSecret() {
         return secret;
@@ -41,6 +47,14 @@ public class JwtUtil {
 
     public void setExpiration(long expiration) {
         this.expiration = expiration;
+    }
+
+    public long getRedis_expiration() {
+        return redis_expiration;
+    }
+
+    public void setRedis_expiration(long redis_expiration) {
+        this.redis_expiration = redis_expiration;
     }
 
     // 签名算法
@@ -66,27 +80,32 @@ public class JwtUtil {
         claims.put(CLAIM_KEY_USER_NAME, user.getUsername());
         return claims;
     }
-    private String generateAccessToken(String subject, Map<String, Object> claims) {
-        return generateToken(subject, claims, expiration);
+    private String generateAccessToken(String issuer, Map<String, Object> claims) {
+        return generateToken(issuer, claims, expiration);
     }
 
     // 真正生成 token 的方法
 
     // 生成 token
-    private String generateToken(String subject, Map<String, Object> claims, long expiration) {
+    private String generateToken(String issuer,
+                                 Map<String, Object> claims,
+                                 long expiration) {
         Date createdTime = new Date(System.currentTimeMillis()); // 当前时间
         Date expirationTime = this.getExpirationTime(); // 失效时间
 
-        return Jwts.builder()
-                .setSubject("tiro")
+        redisUtil.set(issuer, claims, redis_expiration);
+        String token = Jwts.builder()
+                .setSubject("subject")
                 .setClaims(claims) // 字段 map
-                .setIssuer((String) claims.get(CLAIM_KEY_USER_NAME))
+                .setIssuer(issuer)
                 .setIssuedAt(createdTime) // 签发时间
                 .setNotBefore(createdTime) // 生效时间
                 .setExpiration(expirationTime) // 失效时间
                 // params1: HS256 算法， params2: 签名 key 值
                 .signWith(SIGNATURE_ALGORITHM, this.secret)
                 .compact(); // 生成 token 字符串
+        response.setHeader("x-authorization", token);
+        return token;
     }
 
     // 从 token 中获取 Claims
@@ -102,8 +121,10 @@ public class JwtUtil {
 
             long expire = redisUtil.getExpire(claims.getIssuer());
 
-            if(expire <= 0) {
+            if(expire < -1) {
                 throw new JwtException(401, "token 已过期，请重新登录！");
+            }else {
+                generateAccessToken(claims.getIssuer(), claims);
             }
         } catch ( UnsupportedJwtException e) {
             throw new JwtException(401, "token信息不能被解析，请重新登录");

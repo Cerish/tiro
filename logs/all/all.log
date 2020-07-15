@@ -1,0 +1,10 @@
+2020-07-15 00:00:20  [ main:0 ] - [ INFO ]  info
+2020-07-15 00:00:20  [ main:10 ] - [ ERROR ]  error
+2020-07-15 00:01:58  [ main:0 ] - [ INFO ]  info
+2020-07-15 00:01:58  [ main:0 ] - [ ERROR ]  error
+2020-07-15 00:02:48  [ main:0 ] - [ INFO ]  info
+2020-07-15 00:02:48  [ main:2 ] - [ ERROR ]  error
+2020-07-15 00:37:34  [ main:0 ] - [ INFO ]  info
+2020-07-15 00:37:34  [ main:3 ] - [ ERROR ]  error
+2020-07-15 00:40:58  [ main:0 ] - [ INFO ]  info
+2020-07-15 00:40:58  [ main:8 ] - [ ERROR ]  error

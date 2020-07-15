@@ -37,12 +37,15 @@ public class MyResponseBodyAdvice implements ResponseBodyAdvice {
             return null;
         }
 
-        if(methodParameter.getMethod().isAnnotationPresent(SerializedField.class)){
-            //获取注解配置的包含和去除字段
-            SerializedField serializedField = methodParameter.getMethodAnnotation(SerializedField.class);
-            includes = serializedField.includes();
-            excludes = serializedField.excludes();
+        // 如果没有该注释，则直接返回
+        if(!methodParameter.getMethod().isAnnotationPresent(SerializedField.class)){
+            return o;
         }
+
+        //获取注解配置的包含和去除字段
+        SerializedField serializedField = methodParameter.getMethodAnnotation(SerializedField.class);
+        includes = serializedField.includes();
+        excludes = serializedField.excludes();
 
         Object resObj = null;
         if (o instanceof List){

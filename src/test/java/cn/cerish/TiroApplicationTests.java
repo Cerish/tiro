@@ -38,7 +38,7 @@ class TiroApplicationTests {
 
     @Test
     public void testRedis() {
-
+        System.out.println("testRedis");
     }
 
     @Test
