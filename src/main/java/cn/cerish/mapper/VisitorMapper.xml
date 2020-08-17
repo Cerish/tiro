@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.cerish.mapper.VisitorMapper">
+    <resultMap id="BaseResultMap" type="cn.cerish.entity.Visitor">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="username" jdbcType="CHAR"/>
+        <result column="password" property="password" jdbcType="CHAR"/>
+        <result column="mobile" property="mobile" jdbcType="CHAR"/>
+        <result column="gender" property="gender" jdbcType="BIT"/>
+        <result column="enabled" property="enabled" jdbcType="BIT"/>
+        <result column="role_id" property="roleId" jdbcType="INTEGER"/>
+        <result column="rname" property="roleName" jdbcType="CHAR"/>
+        <result column="rnameZh" property="roleNameZh" jdbcType="CHAR"/>
+        <result column="email" property="email" jdbcType="CHAR"/>
+    </resultMap>
+    <select id="getVisitorById" resultMap="BaseResultMap">
+         select v.*, r.name as rname, r.nameZh as rnameZh from visitor as v
+        inner join (select id, name, nameZh from role) as r on v.role_id = r.id
+         where v.id = #{id}
+    </select>
+    <select id="loadUserByUsername" resultMap="BaseResultMap">
+        select v.*, r.name as rname, r.nameZh as rnameZh from visitor as v
+        inner join (select id, name, nameZh from role) as r on v.role_id = r.id
+        where v.name = #{username}
+    </select>
+    <select id="getVisitorByPage" resultMap="BaseResultMap">
+        select v.*, r.name as rname, r.nameZh as rnameZh from visitor as v
+        inner join (select id, name, nameZh from role) as r on v.role_id = r.id
+        <if test="page != null and size != null">
+            limit #{page},#{size}
+        </if>
+    </select>
+    <select id="getTotal" resultType="java.lang.Long">
+        select count(*) from visitor
+    </select>
+    <update id="updateVisitorById" parameterType="cn.cerish.entity.Visitor">
+        update visitor
+        <set>
+            <if test="username != null">
+                name = #{username,jdbcType=CHAR},
+            </if>
+            <if test="password != null">
+                password = #{password,jdbcType=CHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=CHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=CHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=BIT},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled,jdbcType=BIT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <delete id="deleteVisitorById" parameterType="java.lang.Integer">
+        delete from visitor
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="addVisitor" parameterType="cn.cerish.entity.Visitor" useGeneratedKeys="true">
+        insert into visitor
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="username != null">
+                name,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="enabled != null">
+                enabled,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="username != null">
+                #{username,jdbcType=CHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=CHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=CHAR},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=CHAR},
+            </if>
+            <if test="gender != null">
+                #{gender,jdbcType=BIT},
+            </if>
+            <if test="enabled != null">
+                #{enabled,jdbcType=BIT},
+            </if>
+        </trim>
+    </insert>
+</mapper>

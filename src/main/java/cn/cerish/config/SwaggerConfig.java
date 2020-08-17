@@ -42,7 +42,7 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo("Collection 接口文档"))
                 .groupName("collection")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("cn.cerish.controller.collection"))
+                .apis(RequestHandlerSelectors.basePackage("cn.cerish.controller"))
                 .build()
                 .globalOperationParameters(globalOperation());
     }

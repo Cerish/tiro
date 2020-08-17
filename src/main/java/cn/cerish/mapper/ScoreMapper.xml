@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.cerish.mapper.ScoreMapper">
+    <resultMap id="BaseResultMap" type="cn.cerish.entity.Score">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="course_name" property="courseName" jdbcType="CHAR"/>
+        <result column="course_id" property="courseId" jdbcType="INTEGER"/>
+        <result column="sno" property="studentNo" jdbcType="INTEGER"/>
+        <result column="sname" property="studentName" jdbcType="CHAR"/>
+        <result column="tname" property="teacherName" jdbcType="CHAR"/>
+        <result column="credit" property="credit" jdbcType="INTEGER"/>
+        <result column="score" property="score" jdbcType="INTEGER"/>
+        <result column="class_id" property="classId" jdbcType="INTEGER"/>
+        <result column="cname" property="className" jdbcType="CHAR"/>
+        <result column="semester" property="semester" jdbcType="INTEGER"/>
+        <result column="mname" property="majorName" jdbcType="CHAR"/>
+        <result column="college_id" property="collegeId" jdbcType="INTEGER"/>
+        <result column="mcname" property="collegeName" jdbcType="CHAR"/>
+    </resultMap>
+    <select id="getScoreById" resultMap="BaseResultMap">
+        select s.*, stu.name as sname, stu.student_no as sno, t.name as tname, c.name as cname, m.nameZh as mname , m.college_nameZh as mcname from score as s INNER JOIN
+        (select id, name, student_no from student) as stu on s.student_id = stu.id INNER JOIN
+        (select id, name from teacher) as t on s.teacher_id = t.id INNER JOIN
+        (select id, name from class) as c on s.class_id = c.id INNER JOIN
+        (select id, nameZh, college_nameZh from major) as m on s.major_id = m.id
+        where id = #{id, jdbcType=INTEGER}
+    </select>
+        <select id="getScoreByPage" resultMap="BaseResultMap">
+        select s.*, stu.name as sname, stu.student_no as sno, t.name as tname, c.name as cname, m.nameZh as mname , m.college_nameZh as mcname from score as s INNER JOIN
+        (select id, name, student_no from student) as stu on s.student_id = stu.id INNER JOIN
+        (select id, name from teacher) as t on s.teacher_id = t.id INNER JOIN
+        (select id, name from class) as c on s.class_id = c.id INNER JOIN
+        (select id, nameZh, college_nameZh from major) as m on s.major_id = m.id
+        <where>
+            <if test="score.courseName != null">
+                and s.course_name like concat('%',#{score.courseName} ,'%')
+            </if>
+            <if test="score.teacherName != null">
+                and t.name like concat('%',#{score.teacherName} ,'%')
+            </if>
+            <if test="score.studentName != null">
+                and stu.name like concat('%',#{score.studentName} ,'%')
+            </if>
+            <if test="score.className != null">
+                and c.name like concat('%',#{score.className} ,'%')
+            </if>
+            <if test="score.semester != 0">
+                and s.semester = #{score.semester}
+            </if>
+            <if test="score.credit != 0">
+                and s.credit = #{score.credit}
+            </if>
+            <if test="score.majorId != 0">
+                and s.semester = #{score.majorId}
+            </if>
+            <if test="score.collegeId != 0">
+                and s.college_id = #{score.collegeId}
+            </if>
+            <if test="score.score != 0">
+                and s.score = #{score.score}
+            </if>
+        </where>
+        <if test="page !=null and size!=null">
+            limit #{page},#{size}
+        </if>
+    </select>
+    <select id="getTotal" resultType="java.lang.Long">
+        select count(*) from score as s INNER JOIN
+        (select id, name from student) as stu on s.student_id = stu.id INNER JOIN
+        (select id, name from teacher) as t on s.teacher_id = t.id INNER JOIN
+        (select id, name from class) as c on s.class_id = c.id INNER JOIN
+        (select id, nameZh, college_nameZh from major) as m on s.major_id = m.id
+        <where>
+            <if test="score.courseName != null">
+                and s.course_name like concat('%',#{score.courseName} ,'%')
+            </if>
+            <if test="score.teacherName != null">
+                and t.name like concat('%',#{score.teacherName} ,'%')
+            </if>
+            <if test="score.studentName != null">
+                and stu.name like concat('%',#{score.studentName} ,'%')
+            </if>
+            <if test="score.className != null">
+                and c.name like concat('%',#{score.className} ,'%')
+            </if>
+            <if test="score.semester != 0">
+                and s.semester = #{score.semester}
+            </if>
+            <if test="score.credit != 0">
+                and s.credit = #{score.credit}
+            </if>
+            <if test="score.majorId != 0">
+                and s.semester = #{score.semester}
+            </if>
+            <if test="score.collegeId != 0">
+                and s.college_id = #{score.collegeId}
+            </if>
+            <if test="score.score != 0">
+                and s.score = #{score.score}
+            </if>
+        </where>
+    </select>
+    <delete id="deleteScoreById">
+        delete from score
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <update id="updateCourseById" parameterType="cn.cerish.entity.Score">
+        update course
+        <set>
+            <if test="id != 0">
+                id = #{id, jdbcType=INTEGER},
+            </if>
+            <if test="courseName != null">
+                course_name = #{courseName, jdbcType=CHAR},
+            </if>
+            <if test="classId != 0">
+                class_id = #{classId, jdbcType=INTEGER},
+            </if>
+            <if test="studentId != 0">
+                student_id = #{studentId, jdbcType=INTEGER},
+            </if>
+            <if test="credit != 0">
+                credit = #{credit, jdbcType=INTEGER},
+            </if>
+            <if test="score != 0">
+                score = #{score, jdbcType=INTEGER},
+            </if>
+            <if test="teacherId != 0">
+                teacher_id = #{teacherId, jdbcType=INTEGER},
+            </if>
+            <if test="semester != 0">
+                semester = #{semester, jdbcType=INTEGER},
+            </if>
+            <if test="courseId != 0">
+                course_id = #{courseId, jdbcType=INTEGER},
+            </if>
+            <if test="majorId != 0">
+                major_id = #{majorId, jdbcType=INTEGER},
+            </if>
+            <if test="collegeId != 0">
+               college_id =  #{collegeId, jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <insert id="addScore" parameterType="cn.cerish.entity.Score" useGeneratedKeys="true">
+        insert into course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != 0">
+                id,
+            </if>
+            <if test="courseName != null">
+                course_name,
+            </if>
+            <if test="classId != 0">
+                class_id,
+            </if>
+            <if test="studentId != 0">
+                student_id,
+            </if>
+            <if test="credit != 0">
+                credit,
+            </if>
+            <if test="score != 0">
+                score,
+            </if>
+            <if test="teacherId != 0">
+                teacher_id,
+            </if>
+            <if test="semester != 0">
+                semester,
+            </if>
+            <if test="courseId != 0">
+                course_id,
+            </if>
+            <if test="majorId != 0">
+                major_id,
+            </if>
+            <if test="collegeId != 0">
+                college_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != 0">
+                #{id, jdbcType=INTEGER},
+            </if>
+            <if test="courseName != null">
+                #{courseName, jdbcType=CHAR},
+            </if>
+            <if test="classId != 0">
+                #{classId, jdbcType=INTEGER},
+            </if>
+            <if test="studentId != 0">
+                #{studentId, jdbcType=INTEGER},
+            </if>
+            <if test="credit != 0">
+                #{credit, jdbcType=INTEGER},
+            </if>
+            <if test="score != 0">
+                #{score, jdbcType=INTEGER},
+            </if>
+            <if test="teacherId != 0">
+                #{teacherId, jdbcType=INTEGER},
+            </if>
+            <if test="semester != 0">
+                #{semester, jdbcType=INTEGER},
+            </if>
+            <if test="courseId != 0">
+                #{courseId, jdbcType=INTEGER},
+            </if>
+            <if test="majorId != 0">
+                #{majorId, jdbcType=INTEGER},
+            </if>
+            <if test="collegeId != 0">
+                #{collegeId, jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+</mapper>

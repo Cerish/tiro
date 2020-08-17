@@ -1,17 +1,23 @@
 package cn.cerish.entity;
 
 
-import org.hibernate.validator.constraints.Length;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
-public class User implements UserDetails {
+public class User implements UserDetails{
     private Integer id;
     private String username;
+    @JsonIgnore
+    @NotBlank(message = "手机号不能为空")
+    @Pattern(regexp = "^.*(?=.{8,16})(?=.*\\d)(?=.*[A-Z,a-z,!@#$%^&*?\\(\\)]).*$", message = "手机号格式有误")
     private String password;
     private Boolean enabled;
 
@@ -22,13 +28,13 @@ public class User implements UserDetails {
 
     @NotBlank(message = "手机号不能为空")
     @Pattern(regexp = "^[1][3,4,5,6,7,8,9][0-9]{9}$", message = "手机号格式有误")
-    @Max(value = 11,message = "手机号只能为{max}位")
-    @Min(value = 11,message = "手机号只能为{min}位")
     private String phone;
 
     private String telephone;
     private String address;
     private Date createTime;
+
+    private List<Role> roles;
 
     public Integer getId() {
         return id;
@@ -38,7 +44,6 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    @Override
     public String getUsername() {
         return username;
     }
@@ -47,7 +52,6 @@ public class User implements UserDetails {
         this.username = username;
     }
 
-    @Override
     public String getPassword() {
         return password;
     }
@@ -55,7 +59,7 @@ public class User implements UserDetails {
     public void setPassword(String password) {
         this.password = password;
     }
-//    会跟 isEnabled 冲突
+    // 与 isEnabled 冲突
 //    public Boolean getEnabled() {
 //        return enabled;
 //    }
@@ -112,6 +116,14 @@ public class User implements UserDetails {
         this.address = address;
     }
 
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -125,11 +137,15 @@ public class User implements UserDetails {
                 ", address='" + address + '\'' +
                 '}';
     }
-
     //获取用户权限信息的
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>(roles.size());
+        for (Role role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        }
+        return authorities;
     }
 
     // 表示账户没有过期
@@ -155,4 +171,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return enabled == null ? true : enabled;
     }
+
 }

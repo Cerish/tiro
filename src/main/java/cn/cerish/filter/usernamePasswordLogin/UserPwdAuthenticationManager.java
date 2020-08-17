@@ -1,29 +1,23 @@
-package cn.cerish.filter.loginHandler;
+package cn.cerish.filter.usernamePasswordLogin;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Component
-public class CusAuthenticationManager implements AuthenticationManager {
-
-    private final AdminAuthenticationProvider adminAuthenticationProvider;
-
-    public CusAuthenticationManager(AdminAuthenticationProvider adminAuthenticationProvider) {
-        this.adminAuthenticationProvider = adminAuthenticationProvider;
-    }
+public class UserPwdAuthenticationManager implements AuthenticationManager {
+    @Autowired
+    private UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        Authentication result = adminAuthenticationProvider.authenticate(authentication);
+        Authentication result = usernamePasswordAuthenticationProvider.authenticate(authentication);
         if (Objects.nonNull(result)) {
             return result;
         }
         throw new ProviderNotFoundException("Authentication failed!");
     }
-
 }

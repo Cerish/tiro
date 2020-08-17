@@ -1,5 +1,6 @@
 package cn.cerish;
 
+import cn.cerish.entity.FileProperties;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,7 +10,7 @@ import org.springframework.cache.annotation.EnableCaching;
 @SpringBootApplication
 @MapperScan("cn.cerish.mapper")
 @EnableCaching
-@EnableConfigurationProperties
+@EnableConfigurationProperties(FileProperties.class)
 public class TiroApplication {
 
     public static void main(String[] args) {

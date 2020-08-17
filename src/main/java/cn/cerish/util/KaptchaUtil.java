@@ -1,6 +1,5 @@
 package cn.cerish.util;
 
-import cn.cerish.entity.Response;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -8,11 +8,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;
-
 
     @Override
     public UserDetails loadUserByUsername(String username) {
@@ -21,5 +22,9 @@ public class UserService implements UserDetailsService {
              throw new UsernameNotFoundException("没有找到该用户");
         }
         return user;
+    }
+
+    public List<User> getAllHrs(String keywords) {
+        return userMapper.getAllUsers(keywords);
     }
 }

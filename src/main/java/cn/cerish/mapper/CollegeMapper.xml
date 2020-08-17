@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.cerish.mapper.CollegeMapper">
+    <!--  自定义的 表格列 - 类属性 对应  -->
+    <resultMap id="BaseResultMap" type="cn.cerish.entity.College">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="CHAR"/>
+        <result column="nameZh" property="nameZh" jdbcType="CHAR"/>
+        <result column="campus_id" property="campusId" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="getAllCollege" resultMap="BaseResultMap">
+        select id, name, nameZh, campus_id from college
+        <where>
+            <if test="keyword != null">
+                and nameZh like concat('%',#{keyword},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

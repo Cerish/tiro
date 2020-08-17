@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.cerish.mapper.CourseMapper">
+    <!--  自定义的 表格列 - 类属性 对应  -->
+    <resultMap id="BaseResultMap" type="cn.cerish.entity.Course">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="CHAR"/>
+        <result column="tname" property="teacherName" jdbcType="CHAR"/>
+        <result column="cname" property="className" jdbcType="CHAR"/>
+        <result column="class_id" property="classId" jdbcType="INTEGER"/>
+        <result column="week_day" property="weekDay" jdbcType="INTEGER"/>
+        <result column="week_start" property="weekStart" jdbcType="INTEGER"/>
+        <result column="week_end" property="weekEnd" jdbcType="INTEGER"/>
+        <result column="lesson_start" property="lessonStart" jdbcType="INTEGER"/>
+        <result column="lesson_end" property="lessonEnd" jdbcType="INTEGER"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="course_id" property="courseId" jdbcType="INTEGER"/>
+        <result column="semester" property="semester" jdbcType="INTEGER"/>
+        <result column="credit" property="credit" jdbcType="INTEGER"/>
+        <result column="teacher_id" property="teacherId" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="AllCourseInfo" type="cn.cerish.entity.Course" extends="BaseResultMap">
+        <association property="major" javaType="cn.cerish.entity.Major">
+            <id column="mid" property="id"/>
+            <result column="mname" property="name" jdbcType="CHAR"/>
+            <result column="mnameZh" property="nameZh" jdbcType="CHAR"/>
+            <result column="mcampus_id" property="campusId" jdbcType="INTEGER"/>
+            <result column="mcampus_name" property="campusName" jdbcType="CHAR"/>
+            <result column="mcampus_nameZh" property="campusNameZh" jdbcType="CHAR"/>
+            <result column="mcollege_id" property="collegeId" jdbcType="INTEGER"/>
+            <result column="mcollege_name" property="collegeName" jdbcType="CHAR"/>
+            <result column="mcollege_nameZh" property="collegeNameZh" jdbcType="CHAR"/>
+        </association>
+    </resultMap>
+    <select id="getCourseById" resultMap="AllCourseInfo">
+       select c.*, c1.name as cname, t.name as tname,
+        m.id as mid, m.name as mname, m.nameZh as mnameZh, m.campus_id as mcampus_id, m.campus_name as mcampus_name,
+        m.campus_nameZh as mcampus_nameZh, m.college_id as mcollege_id, m.college_name as mcollege_name, m.college_nameZh as mcollege_nameZh
+        from course as c INNER JOIN
+        (select id, name from teacher) as t on c.teacher_id = t.id INNER JOIN
+        (select id,name, major_id from class) as c1 on c.class_id = c1.id INNER JOIN
+        (select * from major) as m on c1.major_id = m.id
+        where c.id = #{id}
+    </select>
+    <select id="getCourseByPage" resultMap="AllCourseInfo">
+        select c.*, c1.name as cname, t.name as tname,
+        m.id as mid, m.name as mname, m.nameZh as mnameZh, m.campus_id as mcampus_id, m.campus_name as mcampus_name,
+        m.campus_nameZh as mcampus_nameZh, m.college_id as mcollege_id, m.college_name as mcollege_name, m.college_nameZh as mcollege_nameZh
+        from course as c INNER JOIN
+        (select id, name from teacher) as t on c.teacher_id = t.id INNER JOIN
+        (select id,name, major_id from class) as c1 on c.class_id = c1.id INNER JOIN
+        (select * from major) as m on c1.major_id = m.id
+        <where>
+            <if test="course.name !=null">
+                and c.name like concat('%', #{course.name},'%')
+            </if>
+            <if test="course.className !=null">
+                and c1.name like concat('%', #{course.className},'%')
+            </if>
+            <if test="course.semester != 0">
+                and c.semester = #{course.semester}
+            </if>
+            <if test="course.credit != 0">
+                and c.credit = #{course.credit}
+            </if>
+            <if test="course.teacherName != null">
+                and t.name like concat('%', #{course.teacherName},'%')
+            </if>
+            <if test="course.major != null and course.major.id != 0">
+                and m.id = #{course.major.id}
+            </if>
+            <if test="course.major != null and course.major.collegeId != 0">
+                and m.college_id = #{course.major.collegeId}
+            </if>
+        </where>
+        <if test="page !=null and size!=null">
+            limit #{page},#{size}
+        </if>
+    </select>
+    <select id="getTotal" resultType="java.lang.Long">
+        select count(*) from course as c INNER JOIN
+        (select id, name from teacher) as t on c.teacher_id = t.id INNER JOIN
+        (select id,name, major_id from class) as c1 on c.class_id = c1.id INNER JOIN
+        (select * from major) as m on c1.major_id = m.id
+        <where>
+            <if test="course.name !=null">
+                and c.name like concat('%', #{course.name},'%')
+            </if>
+            <if test="course.className !=null">
+                and c1.name like concat('%', #{course.className},'%')
+            </if>
+            <if test="course.semester != 0">
+                and c.semester = #{course.semester}
+            </if>
+            <if test="course.credit != 0">
+                and c.credit = #{course.credit}
+            </if>
+            <if test="course.teacherName != null">
+                and t.name like concat('%', #{course.teacherName},'%')
+            </if>
+            <if test="course.major != null and course.major.id != 0">
+                and m.id = #{course.major.id}
+            </if>
+            <if test="course.major != null and course.major.collegeId != 0">
+                and m.college_id = #{course.major.collegeId}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateCourseById" parameterType="cn.cerish.entity.Course">
+        update course
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=CHAR},
+            </if>
+            <if test="classId != null">
+                class_id = #{classId,jdbcType=INTEGER},
+            </if>
+            <if test="weekDay != null">
+                week_day = #{weekDay,jdbcType=INTEGER},
+            </if>
+            <if test="weekStart != null">
+                week_start = #{weekStart,jdbcType=INTEGER},
+            </if>
+            <if test="weekEnd != null">
+                week_end = #{weekEnd,jdbcType=INTEGER},
+            </if>
+            <if test="lessonStart != null">
+                lesson_start = #{lessonStart,jdbcType=INTEGER},
+            </if>
+            <if test="lessonEnd != null">
+                lesson_end = #{lessonEnd,jdbcType=INTEGER},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="courseId != null">
+                course_id = #{courseId,jdbcType=INTEGER},
+            </if>
+            <if test="semester != null">
+                semester = #{semester,jdbcType=INTEGER},
+            </if>
+            <if test="credit != null">
+                credit = #{credit,jdbcType=INTEGER},
+            </if>
+            <if test="teacherId != null">
+                teacher_id = #{teacherId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteCourseById" parameterType="java.lang.Integer">
+        delete from course
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="addCourse" parameterType="cn.cerish.entity.Course" useGeneratedKeys="true">
+        insert into course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="classId != null">
+                class_id,
+            </if>
+            <if test="weekDay != null">
+                week_day,
+            </if>
+            <if test="weekStart != null">
+                week_start,
+            </if>
+            <if test="weekEnd != null">
+                week_end,
+            </if>
+            <if test="lessonStart != null">
+                lesson_start,
+            </if>
+            <if test="lessonEnd != null">
+                lesson_end,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="courseId != null">
+                course_id,
+            </if>
+            <if test="semester != null">
+                semester,
+            </if>
+            <if test="credit != null">
+                credit,
+            </if>
+            <if test="teacherId != null">
+                teacher_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=CHAR},
+            </if>
+            <if test="classId != null">
+                #{classId,jdbcType=INTEGER},
+            </if>
+            <if test="weekDay != null">
+                #{weekDay,jdbcType=INTEGER},
+            </if>
+            <if test="weekStart != null">
+                #{weekStart,jdbcType=INTEGER},
+            </if>
+            <if test="weekEnd != null">
+                #{weekEnd,jdbcType=INTEGER},
+            </if>
+            <if test="lessonStart != null">
+                #{lessonStart,jdbcType=INTEGER},
+            </if>
+            <if test="lessonEnd != null">
+                #{lessonEnd,jdbcType=INTEGER},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="courseId != null">
+                #{courseId,jdbcType=INTEGER},
+            </if>
+            <if test="semester != null">
+                #{semester,jdbcType=INTEGER},
+            </if>
+            <if test="credit != null">
+                #{credit,jdbcType=INTEGER},
+            </if>
+            <if test="teacherId != null">
+                #{teacherId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+</mapper>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.cerish.mapper.MajorMapper">
+    <!--  自定义的 表格列 - 类属性 对应  -->
+    <resultMap id="BaseResultMap" type="cn.cerish.entity.Major">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="CHAR"/>
+        <result column="nameZh" property="nameZh" jdbcType="CHAR"/>
+        <result column="campus_id" property="campusId" jdbcType="INTEGER"/>
+        <result column="campus_name" property="campusName" jdbcType="CHAR"/>
+        <result column="campus_nameZh" property="campusNameZh" jdbcType="CHAR"/>
+        <result column="college_id" property="collegeId" jdbcType="INTEGER"/>
+        <result column="college_name" property="collegeName" jdbcType="CHAR"/>
+        <result column="college_nameZh" property="collegeNameZh" jdbcType="CHAR"/>
+    </resultMap>
+    <select id="getMajorById" resultMap="BaseResultMap">
+        select * from major where id = #{id}
+    </select>
+    <select id="getMajorByCollegeId" resultMap="BaseResultMap">
+            select * from major where college_id = #{id}
+    </select>
+    <select id="getMajorByPage" resultMap="BaseResultMap">
+        select * from major
+        <where>
+            <if test="major.name != null">
+                and name like concat('%',#{major.name},'%')
+            </if>
+            <if test="major.nameZh != null">
+                and name like concat('%',#{major.nameZh},'%')
+            </if>
+            <if test="major.campusId != 0">
+                and campus_id = #{major.campusId}
+            </if>
+            <if test="major.campusName != null">
+                and campus_name like concat('%',#{major.campusName},'%')
+            </if>
+            <if test="major.campusNameZh != null">
+                and campus_nameZh like concat('%',#{major.campusNameZh},'%')
+            </if>
+            <if test="major.collegeId != 0">
+                and college_id = #{major.collegeId}
+            </if>
+            <if test="major.collegeName != null">
+                and major_name like concat('%',#{major.collegeName},'%')
+            </if>
+            <if test="major.collegeNameZh != null">
+                and major_nameZh like concat('%',#{major.collegeNameZh},'%')
+            </if>
+        </where>
+        <if test="page != null and size!= null">
+            limit #{page},#{size}
+        </if>
+    </select>
+    <select id="getTotal" resultType="java.lang.Long">
+        select count(*) from major
+        <where>
+            <if test="major.name != null">
+                and name like concat('%',#{major.name},'%')
+            </if>
+            <if test="major.nameZh != null">
+                and name like concat('%',#{major.nameZh},'%')
+            </if>
+            <if test="major.campusId != 0">
+                and campus_id = #{major.campusId}
+            </if>
+            <if test="major.campusName != null">
+                and campus_name like concat('%',#{major.campusName},'%')
+            </if>
+            <if test="major.campusNameZh != null">
+                and campus_nameZh like concat('%',#{major.campusNameZh},'%')
+            </if>
+            <if test="major.collegeId != 0">
+                and college_id = #{major.collegeId}
+            </if>
+            <if test="major.collegeName != null">
+                and major_name like concat('%',#{major.collegeName},'%')
+            </if>
+            <if test="major.collegeNameZh != null">
+                and major_nameZh like concat('%',#{major.collegeNameZh},'%')
+            </if>
+        </where>
+    </select>
+
+    <update id="updateMajorById" parameterType="cn.cerish.entity.Major">
+        update major
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=CHAR},
+            </if>
+            <if test="nameZh != null">
+                nameZh = #{nameZh,jdbcType=CHAR},
+            </if>
+            <if test="campusId != null">
+                campus_id = #{campusId,jdbcType=INTEGER},
+            </if>
+            <if test="campusName != null">
+                campus_name = #{campusName,jdbcType=CHAR},
+            </if>
+            <if test="campusNameZh != null">
+                campus_nameZh = #{campusNameZh,jdbcType=CHAR},
+            </if>
+            <if test="collegeId != null">
+                college_id = #{collegeId,jdbcType=INTEGER},
+            </if>
+            <if test="collegeName != null">
+                college_name = #{collegeName,jdbcType=CHAR},
+            </if>
+            <if test="collegeNameZh != null">
+                college_nameZh = #{collegeNameZh,jdbcType=CHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteMajorById" parameterType="java.lang.Integer">
+        delete from major
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="addMajor" parameterType="cn.cerish.entity.Major" useGeneratedKeys="true">
+        insert into major
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="nameZh != null">
+                nameZh,
+            </if>
+            <if test="campusId != null">
+                campus_id,
+            </if>
+            <if test="campusName != null">
+                campus_name,
+            </if>
+            <if test="campusNameZh != null">
+                campus_nameZh,
+            </if>
+            <if test="collegeId != null">
+                college_id,
+            </if>
+            <if test="collegeName != null">
+                college_name,
+            </if>
+            <if test="collegeNameZh != null">
+                college_nameZh,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=CHAR},
+            </if>
+            <if test="nameZh != null">
+                #{nameZh,jdbcType=CHAR},
+            </if>
+            <if test="campusId != null">
+                #{campusId,jdbcType=INTEGER},
+            </if>
+            <if test="campusName != null">
+                #{campusName,jdbcType=CHAR},
+            </if>
+            <if test="campusNameZh != null">
+                #{campusNameZh,jdbcType=CHAR},
+            </if>
+            <if test="collegeId != null">
+                #{collegeId,jdbcType=INTEGER},
+            </if>
+            <if test="collegeName != null">
+                #{collegeName,jdbcType=CHAR},
+            </if>
+            <if test="collegeNameZh != null">
+                #{collegeNameZh,jdbcType=CHAR},
+            </if>
+        </trim>
+    </insert>
+</mapper>

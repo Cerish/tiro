@@ -18,16 +18,16 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request,
                       HttpServletResponse response, Object handler) throws Exception {
-
-        //  被@RequestMapping注解修饰的controller方法就是HandlerMethod
-         if(!(handler instanceof HandlerMethod)) return true;
-         // 验证 token
-         String token = request.getHeader("x-authorization");
-         // 取不到 token 则不能继续访问
-         if(token == null) return false;
-         Boolean tokenExpired = jwtUtil.isTokenExpired(token.substring(5));
-
-         return true;
+        return true;
+//        //  被@RequestMapping注解修饰的controller方法就是HandlerMethod
+//         if(!(handler instanceof HandlerMethod)) return true;
+//         // 验证 token
+//         String token = request.getHeader("x-authorization");
+//         // 取不到 token 则不能继续访问
+//         if(token == null) return false;
+//         Boolean tokenExpired = jwtUtil.isTokenExpired(token.substring(5));
+//
+//         return true;
     }
 
     @Override

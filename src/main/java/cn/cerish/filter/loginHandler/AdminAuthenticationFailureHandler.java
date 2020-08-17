@@ -1,7 +1,6 @@
 package cn.cerish.filter.loginHandler;
 
-import cn.cerish.entity.Response;
-import cn.cerish.util.ResponseUtils;
+import cn.cerish.entity.RespBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
@@ -38,7 +37,7 @@ public class AdminAuthenticationFailureHandler implements AuthenticationFailureH
             msg = "登录失败!";
         }
         PrintWriter writer = response.getWriter();
-        Response res = ResponseUtils.error(403, msg);
+        RespBean res = RespBean.error(403, msg);
         writer.write(new ObjectMapper().writeValueAsString(res));
         writer.flush();
         writer.close();

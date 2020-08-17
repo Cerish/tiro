@@ -1,7 +1,6 @@
 package cn.cerish.common.exception;
 
-import cn.cerish.entity.Response;
-import cn.cerish.util.ResponseUtils;
+import cn.cerish.entity.RespBean;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,9 +12,9 @@ public class JwtExceptionHandler {
 
     @ExceptionHandler(JwtException.class)
     @ResponseBody
-    public Response handle(JwtException je, HttpServletResponse response){
+    public RespBean handle(JwtException je, HttpServletResponse response){
         response.setStatus(401);
-        return ResponseUtils.error(je.getCode(),je.getMsg());
+        return RespBean.error(je.getCode(),je.getMsg());
     }
 
 }

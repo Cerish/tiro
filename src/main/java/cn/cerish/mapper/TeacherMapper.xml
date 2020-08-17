@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.cerish.mapper.TeacherMapper">
+    <!--  自定义的 表格列 - 类属性 对应  -->
+    <resultMap id="BaseResultMap" type="cn.cerish.entity.Teacher">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="username" jdbcType="CHAR"/>
+        <result column="password" property="password" jdbcType="CHAR"/>
+        <result column="id_card" property="IdCard" jdbcType="CHAR"/>
+        <result column="age" property="age" jdbcType="INTEGER"/>
+        <result column="college_id" property="collegeId" jdbcType="INTEGER"/>
+        <result column="college_name" property="collegeName" jdbcType="CHAR"/>
+        <result column="mobile" property="mobile" jdbcType="CHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="birth" property="birth" jdbcType="DATE"/>
+        <result column="gender" property="gender" jdbcType="BIT"/>
+        <result column="is_leader" property="isLeader" jdbcType="BIT"/>
+        <result column="title_id" property="titleId" jdbcType="INTEGER"/>
+        <result column="title_name" property="titleName" jdbcType="CHAR"/>
+        <result column="title_nameZh" property="titleNameZh" jdbcType="CHAR"/>
+        <result column="enabled" property="enabled" jdbcType="BIT"/>
+        <result column="role_id" property="roleId" jdbcType="INTEGER"/>
+        <result column="rname" property="roleName" jdbcType="CHAR"/>
+        <result column="rnameZh" property="roleNameZh" jdbcType="CHAR"/>
+    </resultMap>
+    <select id="getTeacherById" resultMap="BaseResultMap">
+         select t.*, r.name as rname, r.nameZh as rnameZh from teacher as t
+        inner join (select id, name, nameZh from role) as r on t.role_id = r.id
+        where t.id = #{id}
+    </select>
+    <select id="loadUserByUsername" resultMap="BaseResultMap">
+        select t.*, r.name as rname, r.nameZh as rnameZh from teacher as t
+        inner join (select id, name, nameZh from role) as r on t.role_id = r.id
+        where t.name = #{username}
+    </select>
+    <select id="getTeacherByPage" resultMap="BaseResultMap">
+        select t.*, r.name as rname, r.nameZh as rnameZh from teacher as t
+        inner join (select id, name, nameZh from role) as r on t.role_id = r.id
+        <where>
+            <if test="teacher.username != null">
+                and t.name like concat('%', #{teacher.username},'%')
+            </if>
+            <if test="teacher.collegeId != 0">
+                and t.college_id = #{teacher.collegeId, jdbcType=INTEGER}
+            </if>
+            <if test="teacher.gender != -1 ">
+                and t.gender = #{teacher.gender, jdbcType=INTEGER}
+            </if>
+            <if test="teacher.titleId != 0 ">
+                and t.title_id = #{teacher.titleId, jdbcType=INTEGER}
+            </if>
+        </where>
+        <if test="page !=null and size!=null">
+            limit #{page},#{size}
+        </if>
+    </select>
+    <select id="getTeacherByCollegeId" resultMap="BaseResultMap">
+        select t.*, r.name as rname, r.nameZh as rnameZh from teacher as t
+        inner join (select id, name, nameZh from role) as r on t.role_id = r.id
+        where t.college_id = #{id, jdbcType=INTEGER}
+    </select>
+    <select id="getTotal" resultType="java.lang.Long">
+        select count(*) from teacher
+        <where>
+            <if test="teacher.username != null">
+                and name like concat('%', #{teacher.username},'%')
+            </if>
+            <if test="teacher.collegeId != 0">
+                and college_id = #{teacher.collegeId, jdbcType=INTEGER}
+            </if>
+            <if test="teacher.gender != -1 ">
+                and gender = #{teacher.gender, jdbcType=INTEGER}
+            </if>
+            <if test="teacher.titleId != 0 ">
+                and title_id = #{teacher.titleId, jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+    <update id="updateTeacherById" parameterType="cn.cerish.entity.Teacher">
+        update teacher
+        <set>
+            <if test="username != null">
+                name = #{username,jdbcType=CHAR},
+            </if>
+            <if test="password != null">
+                password = #{password,jdbcType=CHAR},
+            </if>
+            <if test="IdCard != null">
+                id_card = #{IdCard,jdbcType=CHAR},
+            </if>
+            <if test="age != null">
+                age = #{age,jdbcType=INTEGER},
+            </if>
+            <if test="collegeId != null">
+                college_id = #{collegeId,jdbcType=INTEGER},
+            </if>
+            <if test="collegeName != null">
+                college_name = #{collegeName,jdbcType=CHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=CHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="birth != null">
+                birth = #{birth,jdbcType=DATE},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=BIT},
+            </if>
+            <if test="isLeader != null">
+                is_leader = #{isLeader,jdbcType=BIT},
+            </if>
+            <if test="titleId != null">
+                title_id = #{titleId,jdbcType=BIT},
+            </if>
+            <if test="titleName != null">
+                title_name = #{titleName,jdbcType=BIT},
+            </if>
+            <if test="titleNameZh != null">
+                title_nameZh = #{titleNameZh,jdbcType=BIT},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled,jdbcType=BIT},
+            </if>
+            <if test="roleId != null">
+                role_id = #{roleId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteClassById" parameterType="java.lang.Integer">
+        delete from teacher
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="addTeacher" parameterType="cn.cerish.entity.Teacher" useGeneratedKeys="true">
+        insert into teacher
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="username != null">
+                name,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="IdCard != null">
+                id_card,
+            </if>
+            <if test="age != null">
+                age,
+            </if>
+            <if test="collegeId != null">
+                college_id,
+            </if>
+            <if test="collegeName != null">
+                college_name,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="birth != null">
+                birth,,
+            </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="isLeader != null">
+                is_leader,
+            </if>
+            <if test="titleId != null">
+                title_id,
+            </if>
+            <if test="titleName != null">
+                title_name,
+            </if>
+            <if test="titleNameZh != null">
+                title_nameZh,
+            </if>
+            <if test="enabled != null">
+                enabled,
+            </if>
+            <if test="roleId != null">
+                role_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="username != null">
+                #{username,jdbcType=CHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=CHAR},
+            </if>
+            <if test="IdCard != null">
+                #{IdCard,jdbcType=CHAR},
+            </if>
+            <if test="age != null">
+                #{age,jdbcType=INTEGER},
+            </if>
+            <if test="collegeId != null">
+                #{collegeId,jdbcType=INTEGER},
+            </if>
+            <if test="collegeName != null">
+                #{collegeName,jdbcType=CHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=CHAR},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="birth != null">
+                #{birth,jdbcType=DATE},
+            </if>
+            <if test="gender != null">
+                #{gender,jdbcType=BIT},
+            </if>
+            <if test="isLeader != null">
+                #{isLeader,jdbcType=BIT},
+            </if>
+            <if test="titleId != null">
+                #{titleId,jdbcType=BIT},
+            </if>
+            <if test="titleName != null">
+                #{titleName,jdbcType=BIT},
+            </if>
+            <if test="titleNameZh != null">
+                #{titleNameZh,jdbcType=BIT},
+            </if>
+            <if test="enabled != null">
+                #{enabled,jdbcType=BIT},
+            </if>
+            <if test="roleId != null">
+                #{roleId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+</mapper>
