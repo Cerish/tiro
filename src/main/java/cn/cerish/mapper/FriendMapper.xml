@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.cerish.mapper.FriendMapper">
+    <!--  自定义的 表格列 - 类属性 对应  -->
+    <resultMap id="BaseResultMap" type="cn.cerish.entity.Friend">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="user_roleId" property="userRoleId" jdbcType="INTEGER"/>
+        <result column="user_name" property="userName" jdbcType="CHAR"/>
+        <result column="friend_id" property="friendId" jdbcType="INTEGER"/>
+        <result column="friend_roleId" property="friendRoleId" jdbcType="INTEGER"/>
+        <result column="friend_name" property="friendName" jdbcType="CHAR"/>
+        <result column="fuserface" property="friendUserface" jdbcType="CHAR"/>
+    </resultMap>
+    <select id="getFriends" resultMap="BaseResultMap">
+        select f.*, u.userface as fuserface from friend as f
+        inner join
+        (select id, role_id, userface from admin
+        UNION
+        select id, role_id, userface from teacher
+        UNION
+        select id, role_id, userface from visitor
+        UNION
+        select id, role_id, userface from student) as u
+        on f.friend_roleId = u.role_id and f.friend_id = u.id
+        <where>
+            <if test="friend.userId != 0">
+                f.user_id = #{friend.userId}
+            </if>
+            <if test="friend.userRoleId != 0">
+                and f.user_roleId = #{friend.userRoleId}
+            </if>
+            <if test="friend.userName != null">
+                and f.user_name like concat('%', #{friend.userName}, '%')
+            </if>
+            <if test="friend.friendId != 0">
+                and f.friend_id = #{friend.friendId}
+            </if>
+            <if test="friend.friendRoleId != 0">
+                and f.friend_roleId = #{friend.friendRoleId}
+            </if>
+            <if test="friend.friendName != null">
+                and f.friend_name like concat('%', #{friend.friendName}, '%')
+            </if>
+        </where>
+        limit 0, 10
+    </select>
+    <select id="getTotal" resultType="java.lang.Long">
+        select count(*) from friend
+        <where>
+            <if test="friend.userId != 0">
+                user_id = #{friend.userId}
+            </if>
+            <if test="friend.userRoleId != 0">
+                and user_roleId = #{friend.userRoleId}
+            </if>
+            <if test="friend.userName != null">
+                and user_name like concat('%', #{friend.userName}, '%')
+            </if>
+            <if test="friend.friendId != 0">
+                and friend_id = #{friend.friendId}
+            </if>
+            <if test="friend.friendRoleId != 0">
+                and friend_roleId = #{friend.friendRoleId}
+            </if>
+            <if test="friend.friendName != null">
+                and friend_name like concat('%', #{friend.friendName}, '%')
+            </if>
+        </where>
+    </select>
+</mapper>

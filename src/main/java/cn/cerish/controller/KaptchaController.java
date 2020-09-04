@@ -1,4 +1,4 @@
-package cn.cerish.controller.auth;
+package cn.cerish.controller;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

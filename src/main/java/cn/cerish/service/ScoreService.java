@@ -1,5 +1,6 @@
 package cn.cerish.service;
 
+import cn.cerish.entity.RespBean;
 import cn.cerish.entity.Score;
 import cn.cerish.entity.ResPageBean;
 import cn.cerish.mapper.ScoreMapper;
@@ -31,5 +32,12 @@ public class ScoreService {
     }
     public Score getScoreById(Integer id) {
         return scoreMapper.getScoreById(id);
+    }
+
+    public int updateScoreById(Score score) {
+        return scoreMapper.updateScoreById(score);
+    }
+    public int deleteScoreById(Integer id) {
+        return scoreMapper.deleteScoreById(id);
     }
 }

@@ -82,8 +82,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Autowired
-    private UserService userService;
 
     // 成功失败的处理函数
     @Autowired
@@ -140,12 +138,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/**")
+                .antMatchers("/auth/**")
                 .permitAll()
                 .anyRequest().authenticated() //所以请求都要进行验证
                 .and().formLogin().loginProcessingUrl("/auth/login")
                 .successHandler(adminAuthenticationSuccessHandler)
                 .failureHandler(adminAuthenticationFailureHandler)
+                .and().rememberMe().tokenValiditySeconds(60)
                 .and().logout().logoutUrl("/auth/logout")
                 // 配置一个 LogoutHandler，开发者可以在这里完成一些数据清除工做
                 .addLogoutHandler(new LogoutHandler() {
@@ -156,10 +155,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         // 设置返回的 response 为空
                         response.setHeader("X-Authorzation", "");
                         // 清空 redis 和 auth
-                        String username = auth.getPrincipal().toString();
-                        SecurityContext context = SecurityContextHolder.getContext();
-                        context.setAuthentication(null);
-                        redisUtil.del(username);
+                        if(auth != null) {
+                            String username = auth.getPrincipal().toString();
+                            SecurityContext context = SecurityContextHolder.getContext();
+                            context.setAuthentication(null);
+                            redisUtil.del(username);
+                        }
                     }
                 })
                 // 配置一个 LogoutSuccessHandler，开发者可以在这里处理注销成功后的业务逻辑

@@ -1,5 +1,6 @@
 package cn.cerish.controller;
 
+import cn.cerish.entity.FileProperties;
 import cn.cerish.entity.UploadFileResponse;
 import cn.cerish.service.FileService;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,16 +29,18 @@ public class FileController {
 
     @Autowired
     private FileService fileService;
+    @Autowired
+    private FileProperties fileProperties;
+
 
     @PostMapping("/uploadFile")
     public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file){
         String fileName = fileService.storeFile(file);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/uploads/")
+                .path(StringUtils.cleanPath(fileProperties.getUploadDir()))
                 .path(fileName)
                 .toUriString();
-
         return new UploadFileResponse(fileName, fileDownloadUri,
                 file.getContentType(), file.getSize());
     }
@@ -50,7 +54,7 @@ public class FileController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/downloadFile/{fileName:.+}")
+    @GetMapping("/img/avatar/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
         // Load file as Resource
         Resource resource = fileService.loadFileAsResource(fileName);
@@ -71,8 +75,11 @@ public class FileController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                // 加上这行代码则会自动弹出下载框
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+
+
 }
 

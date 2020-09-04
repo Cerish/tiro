@@ -1,15 +1,12 @@
 package cn.cerish.util;
 
-import cn.cerish.common.exception.JwtException;
-import cn.cerish.entity.User;
+import cn.cerish.exception.JwtException;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component

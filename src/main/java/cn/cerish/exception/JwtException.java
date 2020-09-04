@@ -1,4 +1,4 @@
-package cn.cerish.common.exception;
+package cn.cerish.exception;
 
 public class JwtException extends RuntimeException {
     private Integer code;

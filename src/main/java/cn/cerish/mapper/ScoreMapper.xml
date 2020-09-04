@@ -8,32 +8,37 @@
         <result column="sno" property="studentNo" jdbcType="INTEGER"/>
         <result column="sname" property="studentName" jdbcType="CHAR"/>
         <result column="tname" property="teacherName" jdbcType="CHAR"/>
+        <result column="teacher_id" property="teacherId" jdbcType="INTEGER"/>
         <result column="credit" property="credit" jdbcType="INTEGER"/>
         <result column="score" property="score" jdbcType="INTEGER"/>
         <result column="class_id" property="classId" jdbcType="INTEGER"/>
         <result column="cname" property="className" jdbcType="CHAR"/>
         <result column="semester" property="semester" jdbcType="INTEGER"/>
         <result column="mname" property="majorName" jdbcType="CHAR"/>
+        <result column="major_id" property="majorId" jdbcType="INTEGER"/>
         <result column="college_id" property="collegeId" jdbcType="INTEGER"/>
         <result column="mcname" property="collegeName" jdbcType="CHAR"/>
     </resultMap>
     <select id="getScoreById" resultMap="BaseResultMap">
         select s.*, stu.name as sname, stu.student_no as sno, t.name as tname, c.name as cname, m.nameZh as mname , m.college_nameZh as mcname from score as s INNER JOIN
-        (select id, name, student_no from student) as stu on s.student_id = stu.id INNER JOIN
+        (select id, name, student_no from student) as stu on s.student_no = stu.student_no INNER JOIN
         (select id, name from teacher) as t on s.teacher_id = t.id INNER JOIN
         (select id, name from class) as c on s.class_id = c.id INNER JOIN
         (select id, nameZh, college_nameZh from major) as m on s.major_id = m.id
-        where id = #{id, jdbcType=INTEGER}
+        where s.id = #{id, jdbcType=INTEGER}
     </select>
         <select id="getScoreByPage" resultMap="BaseResultMap">
         select s.*, stu.name as sname, stu.student_no as sno, t.name as tname, c.name as cname, m.nameZh as mname , m.college_nameZh as mcname from score as s INNER JOIN
-        (select id, name, student_no from student) as stu on s.student_id = stu.id INNER JOIN
+        (select id, name, student_no from student) as stu on s.student_no = stu.student_no INNER JOIN
         (select id, name from teacher) as t on s.teacher_id = t.id INNER JOIN
         (select id, name from class) as c on s.class_id = c.id INNER JOIN
         (select id, nameZh, college_nameZh from major) as m on s.major_id = m.id
         <where>
             <if test="score.courseName != null">
                 and s.course_name like concat('%',#{score.courseName} ,'%')
+            </if>
+            <if test="score.studentNo != null">
+                and stu.student_no like concat('%',#{score.studentNo} ,'%')
             </if>
             <if test="score.teacherName != null">
                 and t.name like concat('%',#{score.teacherName} ,'%')
@@ -66,13 +71,16 @@
     </select>
     <select id="getTotal" resultType="java.lang.Long">
         select count(*) from score as s INNER JOIN
-        (select id, name from student) as stu on s.student_id = stu.id INNER JOIN
+        (select id, name, student_no from student) as stu on s.student_no = stu.student_no INNER JOIN
         (select id, name from teacher) as t on s.teacher_id = t.id INNER JOIN
         (select id, name from class) as c on s.class_id = c.id INNER JOIN
         (select id, nameZh, college_nameZh from major) as m on s.major_id = m.id
         <where>
             <if test="score.courseName != null">
                 and s.course_name like concat('%',#{score.courseName} ,'%')
+            </if>
+            <if test="score.studentNo != null">
+                and stu.student_no like concat('%',#{score.studentNo} ,'%')
             </if>
             <if test="score.teacherName != null">
                 and t.name like concat('%',#{score.teacherName} ,'%')
@@ -105,20 +113,17 @@
         where id = #{id,jdbcType=INTEGER}
     </delete>
 
-    <update id="updateCourseById" parameterType="cn.cerish.entity.Score">
-        update course
+    <update id="updateScoreById" parameterType="cn.cerish.entity.Score">
+        update score
         <set>
-            <if test="id != 0">
-                id = #{id, jdbcType=INTEGER},
-            </if>
             <if test="courseName != null">
                 course_name = #{courseName, jdbcType=CHAR},
             </if>
             <if test="classId != 0">
                 class_id = #{classId, jdbcType=INTEGER},
             </if>
-            <if test="studentId != 0">
-                student_id = #{studentId, jdbcType=INTEGER},
+            <if test="studentNo != null">
+                student_no = #{studentNo, jdbcType=INTEGER},
             </if>
             <if test="credit != 0">
                 credit = #{credit, jdbcType=INTEGER},
@@ -145,7 +150,7 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
     <insert id="addScore" parameterType="cn.cerish.entity.Score" useGeneratedKeys="true">
-        insert into course
+        insert into score
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != 0">
                 id,
@@ -156,8 +161,8 @@
             <if test="classId != 0">
                 class_id,
             </if>
-            <if test="studentId != 0">
-                student_id,
+            <if test="studentNo != null">
+                student_no,
             </if>
             <if test="credit != 0">
                 credit,
@@ -191,8 +196,8 @@
             <if test="classId != 0">
                 #{classId, jdbcType=INTEGER},
             </if>
-            <if test="studentId != 0">
-                #{studentId, jdbcType=INTEGER},
+            <if test="studentNo != null">
+                #{studentNo, jdbcType=INTEGER},
             </if>
             <if test="credit != 0">
                 #{credit, jdbcType=INTEGER},

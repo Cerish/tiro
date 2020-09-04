@@ -26,11 +26,12 @@ public class Teacher implements UserDetails {
     private int roleId;
     private String roleName;
     private String roleNameZh;
+    private String userface = "G:\\huajieli\\project\\backend\\tiro\\uploads\\tiro.ico";
 
     public Teacher() {
     }
 
-    public Teacher(int id, String username, String password, String idCard, int age, int collegeId, String collegeName, String mobile, String address, Date birth, int gender, Boolean isLeader, int titleId, String titleName, String titleNameZh, Boolean enabled, int roleId, String roleName, String roleNameZh) {
+    public Teacher(int id, String username, String password, String idCard, int age, int collegeId, String collegeName, String mobile, String address, Date birth, int gender, Boolean isLeader, int titleId, String titleName, String titleNameZh, Boolean enabled, int roleId, String roleName, String roleNameZh, String userface) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -50,6 +51,7 @@ public class Teacher implements UserDetails {
         this.roleId = roleId;
         this.roleName = roleName;
         this.roleNameZh = roleNameZh;
+        this.userface = userface;
     }
 
     @Override
@@ -74,6 +76,7 @@ public class Teacher implements UserDetails {
                 ", roleId=" + roleId +
                 ", roleName='" + roleName + '\'' +
                 ", roleNameZh='" + roleNameZh + '\'' +
+                ", userface='" + userface + '\'' +
                 '}';
     }
 
@@ -257,4 +260,11 @@ public class Teacher implements UserDetails {
         this.roleId = roleId;
     }
 
+    public String getUserface() {
+        return userface;
+    }
+
+    public void setUserface(String userface) {
+        this.userface = userface;
+    }
 }

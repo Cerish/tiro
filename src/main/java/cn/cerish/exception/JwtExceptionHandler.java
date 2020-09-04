@@ -1,4 +1,4 @@
-package cn.cerish.common.exception;
+package cn.cerish.exception;
 
 import cn.cerish.entity.RespBean;
 import org.springframework.web.bind.annotation.ControllerAdvice;

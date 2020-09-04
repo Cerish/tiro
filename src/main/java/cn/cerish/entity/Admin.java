@@ -17,6 +17,7 @@ public class Admin implements UserDetails {
     private String roleNameZh;
     private boolean enabled;
     private int isLeader = -1;
+    private String userface = "G:\\huajieli\\project\\backend\\tiro\\uploads\\tiro.ico";
 
     public int getId() {
         return id;
@@ -24,6 +25,14 @@ public class Admin implements UserDetails {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUserface() {
+        return userface;
+    }
+
+    public void setUserface(String userface) {
+        this.userface = userface;
     }
 
     public String getUsername() {
@@ -129,6 +138,21 @@ public class Admin implements UserDetails {
     public Admin() {
     }
 
+    public Admin(int id, String username, String password, String mobile, int gender, String email, int roleId, String roleName, String roleNameZh, boolean enabled, int isLeader, String userface) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.mobile = mobile;
+        this.gender = gender;
+        this.email = email;
+        this.roleId = roleId;
+        this.roleName = roleName;
+        this.roleNameZh = roleNameZh;
+        this.enabled = enabled;
+        this.isLeader = isLeader;
+        this.userface = userface;
+    }
+
     @Override
     public String toString() {
         return "Admin{" +
@@ -143,21 +167,8 @@ public class Admin implements UserDetails {
                 ", roleNameZh='" + roleNameZh + '\'' +
                 ", enabled=" + enabled +
                 ", isLeader=" + isLeader +
+                ", userface='" + userface + '\'' +
                 '}';
-    }
-
-    public Admin(int id, String username, String password, String mobile, int gender, String email, int roleId, String roleName, String roleNameZh, boolean enabled, int isLeader) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.mobile = mobile;
-        this.gender = gender;
-        this.email = email;
-        this.roleId = roleId;
-        this.roleName = roleName;
-        this.roleNameZh = roleNameZh;
-        this.enabled = enabled;
-        this.isLeader = isLeader;
     }
 
 }

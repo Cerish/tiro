@@ -4,7 +4,7 @@ public class Score {
     private int id;
     private String courseName;
     private int courseId;
-    private int studentNo;
+    private String studentNo;
     private String studentName;
     private int teacherId;
     private String teacherName;
@@ -42,11 +42,11 @@ public class Score {
         this.courseId = courseId;
     }
 
-    public int getStudentId() {
+    public String getStudentNo() {
         return studentNo;
     }
 
-    public void setStudentId(int studentNo) {
+    public void setStudentNo(String studentNo) {
         this.studentNo = studentNo;
     }
 
@@ -149,7 +149,7 @@ public class Score {
     public Score() {
     }
 
-    public Score(int id, String courseName, int courseId, int studentNo, String studentName, int teacherId, String teacherName, int credit, int score, int classId, String className, int semester, int majorId, String majorName, int collegeId, String collegeName) {
+    public Score(int id, String courseName, int courseId, String studentNo, String studentName, int teacherId, String teacherName, int credit, int score, int classId, String className, int semester, int majorId, String majorName, int collegeId, String collegeName) {
         this.id = id;
         this.courseName = courseName;
         this.courseId = courseId;

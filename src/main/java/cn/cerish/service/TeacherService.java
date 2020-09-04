@@ -2,7 +2,6 @@ package cn.cerish.service;
 
 import cn.cerish.entity.ResPageBean;
 import cn.cerish.entity.Teacher;
-import cn.cerish.entity.User;
 import cn.cerish.mapper.TeacherMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -38,7 +38,7 @@
     <select id="getStudentByPage" resultMap="BaseResultMap">
         select s.*, c.name as cname, m.nameZh as mname, m.college_nameZh as mcname,
         r.name as rname, r.nameZh as rnameZh from student as s
-        inner join (select id, name, nameZh from role) as r on t.role_id = r.id
+        inner join (select id, name, nameZh from role) as r on s.role_id = r.id
         inner join (select id, name from class) as c on s.class_id = c.id 
         INNER JOIN (select id, nameZh,college_id, college_nameZh from major) as m on s.major_id = m.id
         <where>
@@ -140,7 +140,7 @@
             <if test="birth != null">
                 birth = #{birth,jdbcType=DATE},
             </if>
-            <if test="admissionTime != DATE">
+            <if test="admissionTime != null">
                 admission_time = #{admissionTime,jdbcType=DATE},
             </if>
             <if test="gender != null">
@@ -164,7 +164,7 @@
     <insert id="addStudent" parameterType="cn.cerish.entity.Student" useGeneratedKeys="true">
         insert into student
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
+            <if test="id != 0">
                 id,
             </if>
             <if test="username != null">
@@ -179,13 +179,13 @@
             <if test="age != null">
                 age,
             </if>
-            <if test="collegeId != null">
+            <if test="collegeId != 0">
                 college_id,
             </if>
-            <if test="majorId != null">
+            <if test="majorId != 0">
                 major_id,
             </if>
-            <if test="classId != null">
+            <if test="classId != 0">
                 class_id,
             </if>
             <if test="mobile != null">
@@ -197,21 +197,21 @@
             <if test="birth != null">
                 birth,
             </if>
-            <if test="admissionTime != DATE">
+            <if test="admissionTime != null">
                 admission_time,
             </if>
-            <if test="gender != null">
+            <if test="gender != -1">
                 gender,
             </if>
             <if test="enabled != null">
                 enabled,
             </if>
-            <if test="roleId != null">
+            <if test="roleId != 0">
                 role_id,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">
+            <if test="id != 0">
                 #{id,jdbcType=INTEGER},
             </if>
             <if test="username != null">
@@ -223,16 +223,16 @@
             <if test="IdCard != null">
                 #{IdCard,jdbcType=CHAR},
             </if>
-            <if test="age != null">
+            <if test="age != 0">
                 #{age,jdbcType=INTEGER},
             </if>
-            <if test="collegeId != null">
+            <if test="collegeId != 0 0">
                 #{collegeId,jdbcType=INTEGER},
             </if>
-            <if test="majorId != null">
+            <if test="majorId != 0">
                 #{majorId,jdbcType=INTEGER},
             </if>
-            <if test="classId != null">
+            <if test="classId != 0">
                 #{classId,jdbcType=INTEGER},
             </if>
             <if test="mobile != null">
@@ -244,16 +244,16 @@
             <if test="birth != null">
                 #{birth,jdbcType=DATE},
             </if>
-            <if test="admissionTime != DATE">
+            <if test="admissionTime != null">
                 #{admissionTime,jdbcType=DATE},
             </if>
-            <if test="gender != null">
+            <if test="gender != -1">
                 #{gender,jdbcType=BIT},
             </if>
             <if test="enabled != null">
                 #{enabled,jdbcType=BIT},
             </if>
-            <if test="roleId != null">
+            <if test="roleId != 0">
                 #{roleId,jdbcType=INTEGER},
             </if>
         </trim>

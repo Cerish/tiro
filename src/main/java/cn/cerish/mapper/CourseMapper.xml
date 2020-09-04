@@ -72,6 +72,9 @@
             <if test="course.major != null and course.major.collegeId != 0">
                 and m.college_id = #{course.major.collegeId}
             </if>
+            <if test="course.classId">
+                and c.class_id = #{course.classId}
+            </if>
         </where>
         <if test="page !=null and size!=null">
             limit #{page},#{size}
@@ -103,6 +106,9 @@
             </if>
             <if test="course.major != null and course.major.collegeId != 0">
                 and m.college_id = #{course.major.collegeId}
+            </if>
+            <if test="course.classId">
+                and c.class_id = #{course.classId}
             </if>
         </where>
     </select>

@@ -15,13 +15,12 @@ public class WebConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(loginInterceptor());
-//                .addPathPatterns("/**");
-//                .excludePathPatterns("/swagger-resources/**", "/webjars/**",
-//                                    "/v2/**", "/swagger-ui.html/**")
-//                .excludePathPatterns("/auth/**")
-//                .excludePathPatterns("/kaptcha/**")
-//                .excludePathPatterns("/uploadFile");
+        registry.addInterceptor(loginInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/swagger-resources/**", "/webjars/**",
+                                    "/v2/**", "/swagger-ui.html/**")
+                .excludePathPatterns("/auth/**")
+                .excludePathPatterns("/kaptcha/**");
 
     }
 }

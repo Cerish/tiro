@@ -1,7 +1,8 @@
 package cn.cerish.service;
 
-import cn.cerish.common.exception.FileException;
+import cn.cerish.exception.FileException;
 import cn.cerish.entity.FileProperties;
+import cn.cerish.util.RandowUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -18,6 +19,11 @@ import java.nio.file.StandardCopyOption;
 
 @Service
 public class FileService {
+    @Autowired
+    private RandowUtils randowUtils;
+    private String AVATAR_DIR = "avatar/";
+    @Autowired
+    private FileProperties fileProperties;
 
     private final Path fileStorageLocation; // 文件在本地存储的地址
 
@@ -39,20 +45,23 @@ public class FileService {
      * @return 文件名
      */
     public String storeFile(MultipartFile file) {
-        // Normalize file name
+        // 清理路径 去除 ../
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
+
         try {
-            // Check if the file's name contains invalid characters
-            if(fileName.contains("..")) {
-                throw new FileException("Sorry! Filename contains invalid path sequence " + fileName);
+            // 如果不存在该文件夹 则创建
+            if(!Files.exists(this.fileStorageLocation.resolve(AVATAR_DIR))) {
+                Files.createDirectory(this.fileStorageLocation.resolve(AVATAR_DIR));
             }
 
-            // Copy file to the target location (Replacing existing file with the same name)
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            // 文件存储名称： /avatar/随机8位数 + 获取文件后缀名
+            String extName = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+            String avatar = AVATAR_DIR + randowUtils.generate(8) + extName;
+            Path targetLocation = this.fileStorageLocation.resolve(avatar);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            return fileName;
+            return avatar;
         } catch (IOException ex) {
             throw new FileException("Could not store file " + fileName + ". Please try again!", ex);
         }
@@ -64,16 +73,18 @@ public class FileService {
      * @return 文件
      */
     public Resource loadFileAsResource(String fileName) {
+        String savePath = "";
         try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            savePath = AVATAR_DIR + fileName;
+            Path filePath = this.fileStorageLocation.resolve(savePath).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if(resource.exists()) {
                 return resource;
             } else {
-                throw new FileException("File not found " + fileName);
+                throw new FileException("File not found " + savePath);
             }
         } catch (MalformedURLException ex) {
-            throw new FileException("File not found " + fileName, ex);
+            throw new FileException("File not found " + savePath, ex);
         }
     }
 }

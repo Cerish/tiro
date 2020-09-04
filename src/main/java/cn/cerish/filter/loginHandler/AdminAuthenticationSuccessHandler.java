@@ -1,11 +1,9 @@
 package cn.cerish.filter.loginHandler;
 
 import cn.cerish.entity.*;
-import cn.cerish.service.UserService;
 import cn.cerish.util.JwtUtil;
 import cn.cerish.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -19,7 +17,6 @@ import java.io.PrintWriter;
 import java.lang.Class;
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class AdminAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -27,8 +24,6 @@ public class AdminAuthenticationSuccessHandler implements AuthenticationSuccessH
     private JwtUtil jwtUtil;
     @Autowired
     private RedisUtil redisUtil;
-    @Autowired
-    private UserService userService;
 
     private Long redis_expire = 60*60*24*15L;
 

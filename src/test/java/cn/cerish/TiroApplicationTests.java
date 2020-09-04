@@ -1,17 +1,29 @@
 package cn.cerish;
 
-import cn.cerish.entity.User;
+import cn.cerish.entity.Friend;
+import cn.cerish.entity.ResPageBean;
+import cn.cerish.mapper.FriendMapper;
+import cn.cerish.service.FriendService;
 import cn.cerish.util.JwtUtil;
+import cn.cerish.util.RandowUtils;
 import cn.cerish.util.RedisUtil;
 import org.apache.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.lang.reflect.Field;
-import java.util.HashMap;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 
 @SpringBootTest
@@ -22,28 +34,6 @@ class TiroApplicationTests {
     @Autowired
     private RedisUtil redisUtil;
 
-    @Test
-    public void testToken() throws NoSuchFieldException, IllegalAccessException {
-        User user = new User();
-        user.setId(10);
-        user.setUsername("jack");
-        user.setPassword("123");
-
-        Field username = user.getClass().getDeclaredField("username");
-        username.setAccessible(true);
-        Object o = username.get(user);
-        String name = username.getName();
-        System.out.println(o.toString());
-        System.out.println(name);
-
-//        String token = jwtUtil.generateAccessToken(user.getUsername(), new HashMap<>());
-//        System.out.println(token);
-//
-//        System.out.println("================= token 数据 =================");
-//        System.out.println(jwtUtil.getClaimsFromToken(token));
-//        System.out.println("================= token 是否过期 =================");
-//        System.out.println(jwtUtil.isTokenExpired(token));
-    }
 
     @Test
     public void testRedis() {
@@ -73,4 +63,21 @@ class TiroApplicationTests {
         System.out.println(isValid);
         System.out.println(encode);
     }
+    
+    @Autowired
+    private FriendService friendService;
+    @Autowired
+    private FriendMapper friendMapper;
+    
+    @Test
+    public void threadTest() throws ExecutionException, InterruptedException {
+        Friend friend = new Friend();
+        friend.setUserId(1);
+        friend.setUserRoleId(1);
+
+        List<Friend> friends = friendMapper.getFriends(friend);
+
+    }
+
+
 }

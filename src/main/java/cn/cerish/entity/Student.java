@@ -19,7 +19,7 @@ public class Student implements UserDetails {
     private String address;
     private Date birth;
     private Date admissionTime;
-    private int gender;
+    private int gender = -1;
     private Boolean enabled;
     private int roleId;
     private String roleName;
@@ -28,11 +28,12 @@ public class Student implements UserDetails {
     private String className;
     private String majorName;
     private String collegeName;
+    private String userface;
 
     public Student() {
     }
 
-    public Student(int id, String username, String password, String idCard, int age, int collegeId, int majorId, int classId, String mobile, String address, Date birth, Date admissionTime, int gender, Boolean enabled, int roleId, String roleName, String roleNameZh, String studentNo, String className, String majorName, String collegeName) {
+    public Student(int id, String username, String password, String idCard, int age, int collegeId, int majorId, int classId, String mobile, String address, Date birth, Date admissionTime, int gender, Boolean enabled, int roleId, String roleName, String roleNameZh, String studentNo, String className, String majorName, String collegeName, String userface) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -54,6 +55,7 @@ public class Student implements UserDetails {
         this.className = className;
         this.majorName = majorName;
         this.collegeName = collegeName;
+        this.userface = userface;
     }
 
     @Override
@@ -80,6 +82,7 @@ public class Student implements UserDetails {
                 ", className='" + className + '\'' +
                 ", majorName='" + majorName + '\'' +
                 ", collegeName='" + collegeName + '\'' +
+                ", userface='" + userface + '\'' +
                 '}';
     }
 
@@ -280,4 +283,11 @@ public class Student implements UserDetails {
         this.enabled = enabled;
     }
 
+    public String getUserface() {
+        return userface;
+    }
+
+    public void setUserface(String userface) {
+        this.userface = userface;
+    }
 }

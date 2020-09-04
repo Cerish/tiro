@@ -16,6 +16,16 @@ public class Visitor implements UserDetails {
     private String roleName;
     private String roleNameZh;
     private boolean enabled;
+    private String userface = "G:\\huajieli\\project\\backend\\tiro\\uploads\\tiro.ico";
+
+
+    public String getUserface() {
+        return userface;
+    }
+
+    public void setUserface(String userface) {
+        this.userface = userface;
+    }
 
     public int getId() {
         return id;
@@ -122,7 +132,7 @@ public class Visitor implements UserDetails {
     public Visitor() {
     }
 
-    public Visitor(int id, String username, String password, String mobile, int gender, String email, int roleId, String roleName, String roleNameZh, boolean enabled) {
+    public Visitor(int id, String username, String password, String mobile, int gender, String email, int roleId, String roleName, String roleNameZh, boolean enabled, String userface) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -133,6 +143,7 @@ public class Visitor implements UserDetails {
         this.roleName = roleName;
         this.roleNameZh = roleNameZh;
         this.enabled = enabled;
+        this.userface = userface;
     }
 
     @Override
@@ -148,6 +159,7 @@ public class Visitor implements UserDetails {
                 ", roleName='" + roleName + '\'' +
                 ", roleNameZh='" + roleNameZh + '\'' +
                 ", enabled=" + enabled +
+                ", userface='" + userface + '\'' +
                 '}';
     }
 }

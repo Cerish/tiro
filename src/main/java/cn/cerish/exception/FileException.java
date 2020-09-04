@@ -1,4 +1,4 @@
-package cn.cerish.common.exception;
+package cn.cerish.exception;
 
 public class FileException extends RuntimeException{
     public FileException(String message) {
