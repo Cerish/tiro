@@ -10,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -33,24 +35,28 @@ public class FileController {
     private FileProperties fileProperties;
 
 
-    @PostMapping("/uploadFile")
+    @PostMapping("/avatar/uploadFile")
     public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file){
-        String fileName = fileService.storeFile(file);
+        String filePath = fileService.storeAvatarFile(file);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(StringUtils.cleanPath(fileProperties.getUploadDir()))
-                .path(fileName)
+                .path(File.separator)
+                .path(filePath)
                 .toUriString();
-        return new UploadFileResponse(fileName, fileDownloadUri,
+        return new UploadFileResponse(filePath, fileDownloadUri,
                 file.getContentType(), file.getSize());
     }
 
 
     @PostMapping(value = "/uploadMultipleFiles",headers = "content-type=multipart/form-data")
     public List<UploadFileResponse> uploadMultipleFiles(
-            @RequestParam("files") MultipartFile[] files) {
+            @RequestParam("files") MultipartFile[] files,
+            Authentication authentication) {
         return Arrays.stream(files)
-                .map(this::uploadFile)
+                .map(file -> {
+                    return uploadFile(file);
+                })
                 .collect(Collectors.toList());
     }
 

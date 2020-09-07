@@ -51,7 +51,7 @@ public class SwaggerConfig {
         ParameterBuilder tokenPar = new ParameterBuilder();
         List<Parameter> pars = new ArrayList<>();
         //第一个token为传参的key，第二个token为swagger页面显示的值
-        tokenPar.name("Authorzation").description("token")
+        tokenPar.name("x-Authorization").description("token")
                 .modelRef(new ModelRef("string"))
                 .parameterType("header").required(false).build();
         pars.add(tokenPar.build());

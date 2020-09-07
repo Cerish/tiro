@@ -1,7 +1,7 @@
 package cn.cerish.filter.loginHandler;
 
 import cn.cerish.entity.*;
-import cn.cerish.util.JwtUtil;
+import cn.cerish.util.JwtTokenUtils;
 import cn.cerish.util.RedisUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 @Component
 public class AdminAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtTokenUtils jwtTokenUtils;
     @Autowired
     private RedisUtil redisUtil;
 
@@ -68,7 +68,7 @@ public class AdminAuthenticationSuccessHandler implements AuthenticationSuccessH
         jwtMap.putAll(hashMap);
 
         // 生成token 并将其存储在 redis 中
-        String token = jwtUtil.generateAccessToken(username.toString(), jwtMap);
+        String token = jwtTokenUtils.generateAccessToken(username.toString(), jwtMap);
         response.setHeader("x-authorization", token);
 
         redisUtil.set(username.toString(), token, redis_expire);

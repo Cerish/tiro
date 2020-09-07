@@ -17,8 +17,6 @@ import java.util.List;
 public class AdminService implements UserDetailsService {
     @Autowired
     private AdminMapper adminMapper;
-    @Autowired
-    private HttpServletRequest request;
 
     @Override
     public UserDetails loadUserByUsername(String username) {
@@ -26,11 +24,6 @@ public class AdminService implements UserDetailsService {
         if(admin == null) {
             throw new UsernameNotFoundException("没有找到该管理员");
         }
-        String roleType = request.getParameter("roleType");
-        if(!roleType.equals(admin.getRoleId() + "")) {
-            throw new UsernameNotFoundException("你走错片场啦，不是你这个角色该来的地方");
-        }
-
 
         return admin;
     }

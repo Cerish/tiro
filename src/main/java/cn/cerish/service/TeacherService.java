@@ -16,18 +16,12 @@ import java.util.List;
 public class TeacherService implements UserDetailsService {
     @Autowired
     private TeacherMapper teacherMapper;
-    @Autowired
-    private HttpServletRequest request;
 
     @Override
     public UserDetails loadUserByUsername(String username) {
         Teacher teacher = teacherMapper.loadUserByUsername(username);
         if(teacher == null) {
             throw new UsernameNotFoundException("没有找到该教师");
-        }
-        String roleType = request.getParameter("roleType");
-        if(!roleType.equals(teacher.getRoleId() + "")) {
-            throw new UsernameNotFoundException("你走错片场啦，不是你这个角色该来的地方");
         }
         return teacher;
     }

@@ -33,7 +33,7 @@ public class Student implements UserDetails {
     public Student() {
     }
 
-    public Student(int id, String username, String password, String idCard, int age, int collegeId, int majorId, int classId, String mobile, String address, Date birth, Date admissionTime, int gender, Boolean enabled, int roleId, String roleName, String roleNameZh, String studentNo, String className, String majorName, String collegeName, String userface) {
+    public Student(int id, String username, String password, String idCard, int age, int collegeId, int majorId, int classId, String mobile, String address, Date birth, Date admissionTime, int gender, boolean enabled, int roleId, String roleName, String roleNameZh, String studentNo, String className, String majorName, String collegeName, String userface) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -183,7 +183,7 @@ public class Student implements UserDetails {
         return true;
     }
 
-    @Override
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -275,9 +275,7 @@ public class Student implements UserDetails {
         this.gender = gender;
     }
 
-    //    public Boolean getEnabled() {
-//        return enabled;
-//    }
+
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;

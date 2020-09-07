@@ -2,14 +2,22 @@ package cn.cerish.controller;
 
 import cn.cerish.entity.*;
 import cn.cerish.service.CourseService;
+import cn.cerish.service.FileService;
 import cn.cerish.service.ScoreService;
 import cn.cerish.service.StudentService;
+import cn.cerish.util.UserServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +30,10 @@ public class StudentController {
     private CourseService courseService;
     @Autowired
     private ScoreService scoreService;
+    @Autowired
+    private FileService fileService;
+    @Autowired
+    private UserServiceUtils userServiceUtils;
 
     // 加密方式
     public PasswordEncoder passwordEncoder() {
@@ -81,8 +93,29 @@ public class StudentController {
         }
         return RespBean.error("学生删除失败!");
     }
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(true);
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+    }
     @PutMapping("/")
-    public RespBean updateStudentById(@RequestBody Student student) {
+    public RespBean updateStudentById(Student student,
+                                      MultipartFile file,
+                                      Authentication authentication) {
+        Student principal = (Student) authentication.getPrincipal();
+
+        if(file != null) {
+            String path = fileService.storeAvatarFile(file);
+            String uri = userServiceUtils.generateUri(path);
+            // 先删除原来的头像
+            String userface = principal.getUserface();
+            if(userface != null) {
+                userServiceUtils.delAvatar(userface);
+            }
+            student.setUserface(uri);
+        }
+        student.setEnabled(true);
         if (studentService.updateStudentById(student) == 1) {
             return RespBean.success("学生更新成功!");
         }

@@ -10,9 +10,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @MapperScan("cn.cerish.mapper")
-@EnableCaching
 @EnableConfigurationProperties(FileProperties.class)
-@EnableAsync
 public class TiroApplication {
 
     public static void main(String[] args) {

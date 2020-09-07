@@ -4,10 +4,14 @@ package cn.cerish.controller;
 import cn.cerish.entity.*;
 import cn.cerish.entity.Admin;
 import cn.cerish.service.AdminService;
+import cn.cerish.service.FileService;
+import cn.cerish.util.UserServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +21,10 @@ import java.util.Map;
 public class AdminController {
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private FileService fileService;
+    @Autowired
+    private UserServiceUtils userServiceUtils;
     // 加密方式
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -51,11 +59,26 @@ public class AdminController {
         return RespBean.error("学生删除失败!");
     }
     @PutMapping("/")
-    public RespBean updateAdminById(@RequestBody Admin admin) {
-        if (adminService.updateAdminById(admin) == 1) {
-            return RespBean.success("学生更新成功!");
+    public RespBean updateAdminById(Admin admin,
+                                    MultipartFile file,
+                                    Authentication authentication) {
+        Admin principal = (Admin) authentication.getPrincipal();
+
+        if(file != null) {
+            String path = fileService.storeAvatarFile(file);
+            String uri = userServiceUtils.generateUri(path);
+            // 先删除原来的头像
+            String userface = principal.getUserface();
+            if(userface != null) {
+                userServiceUtils.delAvatar(userface);
+            }
+            admin.setUserface(uri);
         }
-        return RespBean.error("学生更新失败!");
+        admin.setEnabled(true);
+        if (adminService.updateAdminById(admin) == 1) {
+            return RespBean.success("管理员更新成功!");
+        }
+        return RespBean.error("管理员更新失败!");
     }
     @PutMapping("/changePwd")
     public RespBean updateVisitorPassword(@RequestBody Map<String, String> map) {

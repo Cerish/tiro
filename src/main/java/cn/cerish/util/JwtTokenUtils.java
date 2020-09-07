@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Component
 @ConfigurationProperties(prefix = "jwt")
-public class JwtUtil {
+public class JwtTokenUtils {
     @Autowired
     private RedisUtil redisUtil;
 
@@ -112,7 +112,7 @@ public class JwtUtil {
         } catch ( MalformedJwtException e) {
             throw new JwtException(401, "token格式错误，请重新登录！");
         } catch (IllegalArgumentException e) {
-            throw new JwtException(401, "token为空，请重新登录！");
+            throw new JwtException(401, "token无效，请重新登录！");
         }
         return claims;
     }

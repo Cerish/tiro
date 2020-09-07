@@ -15,9 +15,9 @@ public class Admin implements UserDetails {
     private int roleId;
     private String roleName;
     private String roleNameZh;
-    private boolean enabled;
+    private Boolean enabled;
     private int isLeader = -1;
-    private String userface = "G:\\huajieli\\project\\backend\\tiro\\uploads\\tiro.ico";
+    private String userface;
 
     public int getId() {
         return id;
@@ -103,11 +103,12 @@ public class Admin implements UserDetails {
         this.roleId = roleId;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 

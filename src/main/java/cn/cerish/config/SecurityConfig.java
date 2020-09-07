@@ -1,29 +1,25 @@
 package cn.cerish.config;
 
-import cn.cerish.entity.Visitor;
+import cn.cerish.filter.JwtAuthorizationTokenFilter;
 import cn.cerish.filter.loginHandler.AdminAuthenticationFailureHandler;
 import cn.cerish.filter.loginHandler.AdminAuthenticationSuccessHandler;
 import cn.cerish.filter.loginHandler.MyAuthenticationProvider;
-import cn.cerish.filter.mobileCodeLogin.MobileAuthenticationProcessingFilter;
-import cn.cerish.filter.mobileCodeLogin.MobileCodeAuthenticationProvider;
-import cn.cerish.filter.usernamePasswordLogin.UserPwdAuthenticationFilter;
-import cn.cerish.filter.usernamePasswordLogin.UserPwdAuthenticationManager;
-import cn.cerish.filter.usernamePasswordLogin.UsernamePasswordAuthenticationProvider;
 import cn.cerish.service.*;
 import cn.cerish.util.RedisUtil;
+import cn.cerish.util.UserServiceUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,6 +41,7 @@ import java.util.*;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private RedisUtil redisUtil;
+    // 由于分表 产生的多个 Service
     @Autowired
     private AdminService adminService;
     @Autowired
@@ -54,25 +51,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private VisitorService visitorService;
 
+    @Autowired
+    private UserServiceUtils userServiceUtils;
+
+    // 加入 token 验证
+    @Autowired
+    private JwtAuthorizationTokenFilter jwtAuthorizationTokenFilter;
+
 
     @Override
     @Bean
     protected AuthenticationManager authenticationManager() throws Exception {
-        MyAuthenticationProvider myAuthenticationProvider1 = new MyAuthenticationProvider();
-        myAuthenticationProvider1.setPasswordEncoder(passwordEncoder());
-        myAuthenticationProvider1.setUserDetailsService(adminService);
-        MyAuthenticationProvider myAuthenticationProvider2 = new MyAuthenticationProvider();
-        myAuthenticationProvider2.setPasswordEncoder(passwordEncoder());
-        myAuthenticationProvider2.setUserDetailsService(teacherService);
-        MyAuthenticationProvider myAuthenticationProvider3 = new MyAuthenticationProvider();
-        myAuthenticationProvider3.setPasswordEncoder(passwordEncoder());
-        myAuthenticationProvider3.setUserDetailsService(studentService);
-        MyAuthenticationProvider myAuthenticationProvider4 = new MyAuthenticationProvider();
-        myAuthenticationProvider4.setPasswordEncoder(passwordEncoder());
-        myAuthenticationProvider4.setUserDetailsService(visitorService);
-
-        ProviderManager manager = new ProviderManager(myAuthenticationProvider1,myAuthenticationProvider2,
-                myAuthenticationProvider3, myAuthenticationProvider4);
+        List<AuthenticationProvider> providerList = userServiceUtils.getProviderList();
+        ProviderManager manager = new ProviderManager(providerList);
         return manager;
     }
 
@@ -89,51 +80,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AdminAuthenticationFailureHandler adminAuthenticationFailureHandler;
 
-    //
-    @Autowired
-    private MobileCodeAuthenticationProvider mobileCodeAuthenticationProvider;
-    @Autowired
-    private UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider;
-
-    @Autowired
-    @Qualifier("authenticationManagerBean")
-    private AuthenticationManager authenticationManager;
-
-    @Bean
-    public UserPwdAuthenticationManager userPwdAuthenticationManager() {
-        return new UserPwdAuthenticationManager();
-    };
-
-    @Override
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-    public UserPwdAuthenticationFilter userPwdAuthenticationFilter() {
-        UserPwdAuthenticationFilter filter = new UserPwdAuthenticationFilter();
-        filter.setAuthenticationManager(userPwdAuthenticationManager());
-        filter.setAuthenticationSuccessHandler(adminAuthenticationSuccessHandler);
-        filter.setAuthenticationFailureHandler(adminAuthenticationFailureHandler);
-        filter.setFilterProcessesUrl("/auth/login");
-        return filter;
-    }
-
-    public MobileAuthenticationProcessingFilter mobileAuthenticationProcessingFilter() {
-        MobileAuthenticationProcessingFilter filter = new MobileAuthenticationProcessingFilter();
-        filter.setAuthenticationManager(authenticationManager);
-        filter.setAuthenticationSuccessHandler(adminAuthenticationSuccessHandler);
-        filter.setAuthenticationFailureHandler(adminAuthenticationFailureHandler);
-        filter.setFilterProcessesUrl("/auth/sms");
-        return filter;
-    }
-
-    // 自定义验证规则
-     @Override
-     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-         auth.authenticationProvider(usernamePasswordAuthenticationProvider)
-                 .authenticationProvider(mobileCodeAuthenticationProvider);
-     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -144,7 +90,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().formLogin().loginProcessingUrl("/auth/login")
                 .successHandler(adminAuthenticationSuccessHandler)
                 .failureHandler(adminAuthenticationFailureHandler)
-                .and().rememberMe().tokenValiditySeconds(60)
                 .and().logout().logoutUrl("/auth/logout")
                 // 配置一个 LogoutHandler，开发者可以在这里完成一些数据清除工做
                 .addLogoutHandler(new LogoutHandler() {
@@ -181,33 +126,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         writer.close();
 
                     }
-                }).and().csrf().disable();
+                })
+                .and().csrf().disable()
+                // 禁用 session
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 
         // 自定义过滤器认证用户名密码 每次请求都经过该过滤链
-        //  http.addFilterBefore(userPwdAuthenticationFilter(),  UsernamePasswordAuthenticationFilter.class);
-       //  http.addFilterBefore(mobileAuthenticationProcessingFilter(),  UsernamePasswordAuthenticationFilter.class);
-
+       http.addFilterAfter(jwtAuthorizationTokenFilter,  UsernamePasswordAuthenticationFilter.class);
     }
 
+    // 放行web 静态资源 swagger
     @Override
     public void configure(WebSecurity web) throws Exception {
-        // web
-        //     .ignoring()
-        //     .antMatchers(
-        //             "/csrf",
-        //             "swagger-ui.html",
-        //             "**/swagger-ui.html",
-        //             "/favicon.ico",
-        //             "/**/*.css",
-        //             "/**/*.js",
-        //             "/**/*.png",
-        //             "/**/*.gif",
-        //             "/v2/**",
-        //             "/**/*.ttf"
-        //     );
-        //放行swagger
         web.ignoring().antMatchers(
+                "/img/avatar/**",
                 "/v2/api-docs",
                 "/swagger-resources",
                 "/swagger-resources/**",

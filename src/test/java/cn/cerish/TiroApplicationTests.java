@@ -1,35 +1,31 @@
 package cn.cerish;
 
 import cn.cerish.entity.Friend;
-import cn.cerish.entity.ResPageBean;
 import cn.cerish.mapper.FriendMapper;
 import cn.cerish.service.FriendService;
-import cn.cerish.util.JwtUtil;
-import cn.cerish.util.RandowUtils;
+import cn.cerish.util.JwtTokenUtils;
 import cn.cerish.util.RedisUtil;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.lang.reflect.Field;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 
 @SpringBootTest
 class TiroApplicationTests {
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtTokenUtils jwtTokenUtils;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -79,5 +75,19 @@ class TiroApplicationTests {
 
     }
 
+
+    @Test
+    public void testMybatis() throws IOException {
+        String resource = "classpath:/mybatis-config.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+    }
+
+    @Test
+    public void testDel() {
+        String s = "/img/avatar/17316649.jpg";
+        File file = new File(s);
+        file.delete();
+    }
 
 }

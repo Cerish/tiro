@@ -91,7 +91,7 @@
             <if test="age != null">
                 age = #{age,jdbcType=INTEGER},
             </if>
-            <if test="collegeId != null">
+            <if test="collegeId != 0">
                 college_id = #{collegeId,jdbcType=INTEGER},
             </if>
             <if test="collegeName != null">
@@ -106,10 +106,10 @@
             <if test="birth != null">
                 birth = #{birth,jdbcType=DATE},
             </if>
-            <if test="gender != null">
+            <if test="gender != -1">
                 gender = #{gender,jdbcType=BIT},
             </if>
-            <if test="isLeader != null">
+            <if test="isLeader != -1">
                 is_leader = #{isLeader,jdbcType=BIT},
             </if>
             <if test="titleId != null">
@@ -124,8 +124,11 @@
             <if test="enabled != null">
                 enabled = #{enabled,jdbcType=BIT},
             </if>
-            <if test="roleId != null">
+            <if test="roleId != 0">
                 role_id = #{roleId,jdbcType=INTEGER},
+            </if>
+            <if test="userface != null">
+                userface = #{userface,jdbcType=CHAR},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}

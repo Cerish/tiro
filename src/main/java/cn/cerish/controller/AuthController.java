@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    @PostMapping("/login")
+    @PostMapping(value = "/login", headers = "content-type=multipart/form-data")
     public void signin( String username,
                         String password,
-                        Integer roleId) {
+                        Integer roleType) {
 
     }
 }

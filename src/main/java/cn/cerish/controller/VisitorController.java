@@ -3,14 +3,20 @@ package cn.cerish.controller;
 import cn.cerish.entity.ResPageBean;
 import cn.cerish.entity.RespBean;
 import cn.cerish.entity.Visitor;
+import cn.cerish.service.FileService;
 import cn.cerish.service.VisitorService;
+import cn.cerish.util.UserServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +25,11 @@ import java.util.Map;
 public class VisitorController {
     @Autowired
     private VisitorService visitorService;
+    @Autowired
+    private FileService fileService;
+    @Autowired
+    private UserServiceUtils userServiceUtils;
+
     // 加密方式
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -52,8 +63,24 @@ public class VisitorController {
         }
         return RespBean.error("游客删除失败!");
     }
-    @PutMapping("/")
-    public RespBean updateVisitorById(@RequestBody Visitor visitor) {
+
+    @Transactional
+    @PutMapping(value = "/")
+    public RespBean updateVisitorById(Visitor visitor,
+                                      MultipartFile file,
+                                      Authentication authentication) {
+        Visitor principal = (Visitor) authentication.getPrincipal();
+        if(file != null) {
+            String path = fileService.storeAvatarFile(file);
+            String uri = userServiceUtils.generateUri(path);
+            // 先删除原来的头像
+            String userface = principal.getUserface();
+            if(userface != null) {
+                userServiceUtils.delAvatar(userface);
+            }
+            visitor.setUserface(uri);
+        }
+        visitor.setEnabled(true);
         if (visitorService.updateVisitorById(visitor) == 1) {
             return RespBean.success("游客更新成功!");
         }

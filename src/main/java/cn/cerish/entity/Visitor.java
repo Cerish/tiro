@@ -16,7 +16,7 @@ public class Visitor implements UserDetails {
     private String roleName;
     private String roleNameZh;
     private boolean enabled;
-    private String userface = "G:\\huajieli\\project\\backend\\tiro\\uploads\\tiro.ico";
+    private String userface;
 
 
     public String getUserface() {

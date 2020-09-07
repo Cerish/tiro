@@ -1,15 +1,19 @@
 package cn.cerish.service;
 
+import cn.cerish.entity.*;
 import cn.cerish.exception.FileException;
-import cn.cerish.entity.FileProperties;
 import cn.cerish.util.RandowUtils;
+import cn.cerish.util.UserServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -21,13 +25,13 @@ import java.nio.file.StandardCopyOption;
 public class FileService {
     @Autowired
     private RandowUtils randowUtils;
-    private String AVATAR_DIR = "avatar/";
     @Autowired
-    private FileProperties fileProperties;
+    private UserServiceUtils userServiceUtils;
 
+    private String AVATAR_DIR = "avatar/"; // 头像存储的文件夹
     private final Path fileStorageLocation; // 文件在本地存储的地址
 
-    // 在运行的时候即创建了一个目录
+    // 在运行的时候即创建了一个目录，目录名称在 application.yml 配置
     @Autowired
     public FileService(FileProperties fileProperties) {
         this.fileStorageLocation = Paths.get(fileProperties.getUploadDir()).toAbsolutePath().normalize();
@@ -44,13 +48,12 @@ public class FileService {
      * @param file 文件
      * @return 文件名
      */
-    public String storeFile(MultipartFile file) {
+    public String storeAvatarFile(MultipartFile file) {
         // 清理路径 去除 ../
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
-
         try {
-            // 如果不存在该文件夹 则创建
+            // 如果不存在 avatar 文件夹 则创建
             if(!Files.exists(this.fileStorageLocation.resolve(AVATAR_DIR))) {
                 Files.createDirectory(this.fileStorageLocation.resolve(AVATAR_DIR));
             }
@@ -58,6 +61,7 @@ public class FileService {
             // 文件存储名称： /avatar/随机8位数 + 获取文件后缀名
             String extName = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
             String avatar = AVATAR_DIR + randowUtils.generate(8) + extName;
+
             Path targetLocation = this.fileStorageLocation.resolve(avatar);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
@@ -76,6 +80,7 @@ public class FileService {
         String savePath = "";
         try {
             savePath = AVATAR_DIR + fileName;
+            System.out.println(savePath);
             Path filePath = this.fileStorageLocation.resolve(savePath).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if(resource.exists()) {

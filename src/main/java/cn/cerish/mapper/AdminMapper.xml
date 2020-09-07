@@ -59,7 +59,7 @@
             <if test="email != null">
                 email = #{email,jdbcType=CHAR},
             </if>
-            <if test="gender != null">
+            <if test="gender != -1">
                 gender = #{gender,jdbcType=BIT},
             </if>
             <if test="enabled != null">
@@ -67,6 +67,9 @@
             </if>
             <if test="isLeader != -1">
                 is_leader = #{isLeader,jdbcType=INTEGER},
+            </if>
+            <if test="userface != null">
+                userface = #{userface,jdbcType=CHAR},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}

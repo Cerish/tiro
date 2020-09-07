@@ -18,7 +18,7 @@ public class Teacher implements UserDetails {
     private String address;
     private Date birth;
     private int gender = -1;
-    private Boolean isLeader;
+    private int isLeader = -1;
     private int titleId;
     private String titleName;
     private String titleNameZh;
@@ -26,12 +26,12 @@ public class Teacher implements UserDetails {
     private int roleId;
     private String roleName;
     private String roleNameZh;
-    private String userface = "G:\\huajieli\\project\\backend\\tiro\\uploads\\tiro.ico";
+    private String userface;
 
     public Teacher() {
     }
 
-    public Teacher(int id, String username, String password, String idCard, int age, int collegeId, String collegeName, String mobile, String address, Date birth, int gender, Boolean isLeader, int titleId, String titleName, String titleNameZh, Boolean enabled, int roleId, String roleName, String roleNameZh, String userface) {
+    public Teacher(int id, String username, String password, String idCard, int age, int collegeId, String collegeName, String mobile, String address, Date birth, int gender, int isLeader, int titleId, String titleName, String titleNameZh, boolean enabled, int roleId, String roleName, String roleNameZh, String userface) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -143,7 +143,7 @@ public class Teacher implements UserDetails {
         return true;
     }
 
-    @Override
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -212,12 +212,12 @@ public class Teacher implements UserDetails {
         this.birth = birth;
     }
 
-    public Boolean getLeader() {
+    public int getLeader() {
         return isLeader;
     }
 
-    public void setLeader(Boolean leader) {
-        isLeader = leader;
+    public void setLeader(int leader) {
+        this.isLeader = leader;
     }
 
     public int getTitleId() {
@@ -244,7 +244,7 @@ public class Teacher implements UserDetails {
         this.titleNameZh = titleNameZh;
     }
 
-//    public Boolean getEnabled() {
+//    public boolean getEnabled() {
 //        return enabled;
 //    }
 

@@ -54,6 +54,9 @@
             <if test="enabled != null">
                 enabled = #{enabled,jdbcType=BIT},
             </if>
+            <if test="userface != null">
+                userface = #{userface,jdbcType=CHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>

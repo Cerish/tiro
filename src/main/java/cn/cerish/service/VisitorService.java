@@ -17,18 +17,12 @@ import java.util.List;
 public class VisitorService implements UserDetailsService {
     @Autowired
     private VisitorMapper visitorMapper;
-    @Autowired
-    private HttpServletRequest request;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Visitor visitor = visitorMapper.loadUserByUsername(username);
         if(visitor == null) {
             throw new UsernameNotFoundException("没有找到该游客");
-        }
-        String roleType = request.getParameter("roleType");
-        if(!roleType.equals(visitor.getRoleId() + "")) {
-            throw new UsernameNotFoundException("你走错片场啦，不是你这个角色该来的地方");
         }
         return visitor;
     }
